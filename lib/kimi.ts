@@ -2,12 +2,18 @@ import OpenAI from 'openai';
 import { vocabulary } from './vocab';
 import type { ImageAnalysis, GridPosition, PoemTags } from './types';
 
-const kimi = new OpenAI({
-  apiKey: process.env.KIMI_API_KEY!,
-  baseURL: 'https://api.moonshot.ai/v1',
+const USE_DEEPSEEK = true;
+
+const client = new OpenAI({
+  apiKey: USE_DEEPSEEK
+    ? process.env.DEEPSEEK_API_KEY!
+    : process.env.KIMI_API_KEY!,
+  baseURL: USE_DEEPSEEK
+    ? 'https://api.deepseek.com/v1'
+    : 'https://api.moonshot.ai/v1',
 });
 
-const MODEL = 'kimi-k2.6';
+const MODEL = USE_DEEPSEEK ? 'deepseek-chat' : 'kimi-k2.6';
 
 function buildTagPrompt(): string {
   return `你是一位精通唐诗鉴赏的图像分析师。请分析用户上传的图片，按以下受控词表提取标签。每个维度的标签必须从给定词表中选择。
@@ -70,8 +76,23 @@ function isValidGridPosition(v: unknown): v is GridPosition {
   return typeof v === 'string' && valid.includes(v);
 }
 
+function computeTextPlacement(subjectRegion: GridPosition): GridPosition {
+  const diagonalMap: Record<GridPosition, GridPosition> = {
+    'top-left': 'bottom-right',
+    'top': 'bottom',
+    'top-right': 'bottom-left',
+    'left': 'right',
+    'center': 'bottom',
+    'right': 'left',
+    'bottom-left': 'top-right',
+    'bottom': 'top',
+    'bottom-right': 'top-left',
+  };
+  return diagonalMap[subjectRegion];
+}
+
 export async function extractTags(base64Image: string): Promise<ImageAnalysis> {
-  const response = await kimi.chat.completions.create({
+  const response = await client.chat.completions.create({
     model: MODEL,
     temperature: 0,
     response_format: { type: 'json_object' },
@@ -95,7 +116,7 @@ export async function extractTags(base64Image: string): Promise<ImageAnalysis> {
   try {
     parsed = JSON.parse(content);
   } catch {
-    throw new Error('Kimi returned invalid JSON for tag extraction');
+    throw new Error('Model returned invalid JSON for tag extraction');
   }
 
   const tags = (parsed.tags || {}) as ImageAnalysis['tags'];
@@ -103,25 +124,9 @@ export async function extractTags(base64Image: string): Promise<ImageAnalysis> {
     ? parsed.subject_region
     : 'center';
 
-  // Local algorithm: place text diagonally opposite to subject
   const text_placement = computeTextPlacement(subject_region);
 
   return { tags, subject_region, text_placement };
-}
-
-function computeTextPlacement(subjectRegion: GridPosition): GridPosition {
-  const diagonalMap: Record<GridPosition, GridPosition> = {
-    'top-left': 'bottom-right',
-    'top': 'bottom',
-    'top-right': 'bottom-left',
-    'left': 'right',
-    'center': 'bottom',
-    'right': 'left',
-    'bottom-left': 'top-right',
-    'bottom': 'top',
-    'bottom-right': 'top-left',
-  };
-  return diagonalMap[subjectRegion];
 }
 
 export async function selectBestMatch(
@@ -142,7 +147,7 @@ export async function selectBestMatch(
     tags: JSON.stringify(c.tags),
   }));
 
-  const response = await kimi.chat.completions.create({
+  const response = await client.chat.completions.create({
     model: MODEL,
     temperature: 0,
     response_format: { type: 'json_object' },
@@ -166,12 +171,12 @@ export async function selectBestMatch(
   try {
     parsed = JSON.parse(content);
   } catch {
-    throw new Error('Kimi returned invalid JSON for selection');
+    throw new Error('Model returned invalid JSON for selection');
   }
 
   const selectedId = parsed.selected_id;
   if (typeof selectedId !== 'string') {
-    throw new Error('Kimi did not return a valid selected_id');
+    throw new Error('Model did not return a valid selected_id');
   }
 
   return selectedId;
