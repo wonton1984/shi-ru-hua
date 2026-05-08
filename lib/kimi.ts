@@ -1,19 +1,24 @@
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { vocabulary } from './vocab';
 import type { ImageAnalysis, GridPosition, PoemTags } from './types';
 
-const USE_DEEPSEEK = true;
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-const client = new OpenAI({
-  apiKey: USE_DEEPSEEK
-    ? process.env.DEEPSEEK_API_KEY!
-    : process.env.KIMI_API_KEY!,
-  baseURL: USE_DEEPSEEK
-    ? 'https://api.deepseek.com/v1'
-    : 'https://api.moonshot.ai/v1',
+const TAG_MODEL = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+  generationConfig: {
+    temperature: 0,
+    responseMimeType: 'application/json',
+  },
 });
 
-const MODEL = USE_DEEPSEEK ? 'deepseek-chat' : 'kimi-k2.6';
+const SELECT_MODEL = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+  generationConfig: {
+    temperature: 0,
+    responseMimeType: 'application/json',
+  },
+});
 
 function buildTagPrompt(): string {
   return `你是一位精通唐诗鉴赏的图像分析师。请分析用户上传的图片，按以下受控词表提取标签。每个维度的标签必须从给定词表中选择。
@@ -92,31 +97,23 @@ function computeTextPlacement(subjectRegion: GridPosition): GridPosition {
 }
 
 export async function extractTags(base64Image: string): Promise<ImageAnalysis> {
-  const response = await client.chat.completions.create({
-    model: MODEL,
-    temperature: 0,
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: buildTagPrompt() },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image_url',
-            image_url: { url: `data:image/jpeg;base64,${base64Image}` },
-          },
-          { type: 'text', text: '请分析这张图片，返回 JSON。' },
-        ],
+  const result = await TAG_MODEL.generateContent([
+    { text: buildTagPrompt() },
+    {
+      inlineData: {
+        mimeType: 'image/jpeg',
+        data: base64Image,
       },
-    ],
-  });
+    },
+    { text: '请分析这张图片，返回 JSON。' },
+  ]);
 
-  const content = response.choices[0]?.message?.content || '{}';
+  const text = result.response.text();
   let parsed: Record<string, unknown>;
   try {
-    parsed = JSON.parse(content);
+    parsed = JSON.parse(text);
   } catch {
-    throw new Error('Model returned invalid JSON for tag extraction');
+    throw new Error('Gemini returned invalid JSON for tag extraction');
   }
 
   const tags = (parsed.tags || {}) as ImageAnalysis['tags'];
@@ -147,36 +144,28 @@ export async function selectBestMatch(
     tags: JSON.stringify(c.tags),
   }));
 
-  const response = await client.chat.completions.create({
-    model: MODEL,
-    temperature: 0,
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: buildSelectionPrompt(candidateStrings) },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image_url',
-            image_url: { url: `data:image/jpeg;base64,${base64Image}` },
-          },
-          { type: 'text', text: '请从候选诗句中选出最契合的一句。' },
-        ],
+  const result = await SELECT_MODEL.generateContent([
+    { text: buildSelectionPrompt(candidateStrings) },
+    {
+      inlineData: {
+        mimeType: 'image/jpeg',
+        data: base64Image,
       },
-    ],
-  });
+    },
+    { text: '请从候选诗句中选出最契合的一句。' },
+  ]);
 
-  const content = response.choices[0]?.message?.content || '{}';
+  const text = result.response.text();
   let parsed: Record<string, unknown>;
   try {
-    parsed = JSON.parse(content);
+    parsed = JSON.parse(text);
   } catch {
-    throw new Error('Model returned invalid JSON for selection');
+    throw new Error('Gemini returned invalid JSON for selection');
   }
 
   const selectedId = parsed.selected_id;
   if (typeof selectedId !== 'string') {
-    throw new Error('Model did not return a valid selected_id');
+    throw new Error('Gemini did not return a valid selected_id');
   }
 
   return selectedId;
