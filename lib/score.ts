@@ -10,10 +10,10 @@ const WEIGHTS = {
 
 function jaccard(a: string[], b: string[]): number {
   if (a.length === 0 || b.length === 0) return 0;
-  const setA = new Set(a);
-  const setB = new Set(b);
-  const intersection = new Set([...setA].filter((x) => setB.has(x)));
-  return intersection.size / (setA.size + setB.size - intersection.size);
+  const all = [...a, ...b];
+  const union = all.filter((x, i) => all.indexOf(x) === i);
+  const intersection = a.filter((x) => b.includes(x));
+  return intersection.length / union.length;
 }
 
 export function scorePoem(imageTags: PoemTags, poemTags: PoemTags): number {

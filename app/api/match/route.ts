@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       return NextResponse.json(cached);
     }
 
-    let analysis;
+    let analysis: import('@/lib/types').ImageAnalysis;
     try {
       analysis = await extractTags(base64Data);
     } catch (err) {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         tags: { subjects: ['山'], moods: ['闲适'], seasons: [], scenes: ['山水'], palette: ['素淡'] },
         subject_region: 'center',
         text_placement: 'bottom-right',
-      };
+      } as import('@/lib/types').ImageAnalysis;
     }
 
     const scored = (poems as Poem[]).map((poem) => ({
