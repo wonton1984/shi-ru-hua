@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 
 const MESSAGES = [
-  '正在沉吟…',
-  '搜遍唐诗…',
-  '抚卷思索…',
-  '墨香渐起…',
-  '落笔成章…',
+  '墨香渐起',
+  '沉吟推敲',
+  '抚卷寻章',
+  '落笔成章',
+  '诗成画卷',
 ];
 
 export function LoadingPoetic() {
@@ -20,31 +20,42 @@ export function LoadingPoetic() {
       setTimeout(() => {
         setIndex((i) => (i + 1) % MESSAGES.length);
         setFade(true);
-      }, 400);
-    }, 2000);
+      }, 500);
+    }, 2200);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-8"
-    >
-      {/* Elegant spinner */}
-      <div className="relative w-10 h-10"
-      >
-        <div className="absolute inset-0 rounded-full border border-white/10" />
-        <div className="absolute inset-0 rounded-full border-t border-white/60 animate-spin" />
+    <div className="flex flex-col items-center justify-center h-full gap-10">
+      {/* Ink drop animation */}
+      <div className="relative w-3 h-3">
+        <div
+          className="absolute inset-0 rounded-full animate-ping"
+          style={{ backgroundColor: 'var(--paper)', opacity: 0.08, animationDuration: '2s' }}
+        />
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{ backgroundColor: 'var(--paper-dim)', opacity: 0.3 }}
+        />
       </div>
 
       {/* Fading text */}
       <p
-        className={`
-          text-lg font-serif text-white/50 tracking-[0.3em]
-          transition-all duration-500
-          ${fade ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'}
-        `}
+        className={`text-base font-serif tracking-[0.4em] transition-all duration-500 ${
+          fade ? 'opacity-40 translate-y-0' : 'opacity-0 translate-y-1'
+        }`}
+        style={{ color: 'var(--paper-dim)' }}
       >
         {MESSAGES[index]}
       </p>
+
+      {/* Subtle progress line */}
+      <div className="w-16 h-px relative overflow-hidden" style={{ backgroundColor: 'var(--ink-mid)', opacity: 0.3 }}>
+        <div
+          className="absolute inset-y-0 left-0 w-1/3 animate-pulse"
+          style={{ backgroundColor: 'var(--paper)', opacity: 0.15 }}
+        />
+      </div>
     </div>
   );
 }

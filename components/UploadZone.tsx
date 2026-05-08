@@ -40,50 +40,76 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
       {...getRootProps()}
       className={`
         group relative flex flex-col items-center justify-center
-        w-full max-w-md mx-auto aspect-[4/3]
-        rounded-2xl cursor-pointer
-        transition-all duration-500 ease-out
-        ${isDragActive
-          ? 'bg-white/10 scale-[1.02] border-white/40'
-          : 'bg-white/[0.02] hover:bg-white/[0.05] border-white/10 hover:border-white/25'
-        }
-        border backdrop-blur-md
+        w-72 md:w-80 aspect-[3/4]
+        cursor-pointer
+        transition-all duration-700 ease-out
+        ${isDragActive ? 'scale-[1.03]' : 'hover:scale-[1.01]'}
       `}
+      style={{
+        background: 'linear-gradient(180deg, rgba(232,224,208,0.03) 0%, rgba(232,224,208,0.01) 100%)',
+        border: '1px solid rgba(168, 160, 140, 0.15)',
+      }}
     >
       <input {...getInputProps()} />
 
-      {/* Animated glow ring on hover */}
-      <div className={`
-        absolute inset-0 rounded-2xl transition-opacity duration-500
-        ${isDragActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
-      `} style={{
-        background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%)',
-      }} />
+      {/* Inner frame - scroll-like border */}
+      <div
+        className="absolute inset-3 transition-all duration-500 group-hover:inset-2.5"
+        style={{
+          border: '1px solid rgba(168, 160, 140, 0.08)',
+        }}
+      />
+
+      {/* Corner ornaments */}
+      <div className="absolute top-3 left-3 w-4 h-4">
+        <div className="absolute top-0 left-0 w-full h-px" style={{ backgroundColor: 'var(--gold)', opacity: 0.25 }} />
+        <div className="absolute top-0 left-0 h-full w-px" style={{ backgroundColor: 'var(--gold)', opacity: 0.25 }} />
+      </div>
+      <div className="absolute top-3 right-3 w-4 h-4">
+        <div className="absolute top-0 right-0 w-full h-px" style={{ backgroundColor: 'var(--gold)', opacity: 0.25 }} />
+        <div className="absolute top-0 right-0 h-full w-px" style={{ backgroundColor: 'var(--gold)', opacity: 0.25 }} />
+      </div>
+      <div className="absolute bottom-3 left-3 w-4 h-4">
+        <div className="absolute bottom-0 left-0 w-full h-px" style={{ backgroundColor: 'var(--gold)', opacity: 0.25 }} />
+        <div className="absolute bottom-0 left-0 h-full w-px" style={{ backgroundColor: 'var(--gold)', opacity: 0.25 }} />
+      </div>
+      <div className="absolute bottom-3 right-3 w-4 h-4">
+        <div className="absolute bottom-0 right-0 w-full h-px" style={{ backgroundColor: 'var(--gold)', opacity: 0.25 }} />
+        <div className="absolute bottom-0 right-0 h-full w-px" style={{ backgroundColor: 'var(--gold)', opacity: 0.25 }} />
+      </div>
+
+      {/* Hover glow */}
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(201,169,97,0.04) 0%, transparent 70%)',
+        }}
+      />
 
       <div className="relative text-center px-8">
-        {/* Upload icon */}
-        <div className={`
-          mx-auto mb-5 w-12 h-12 rounded-full border border-white/20
-          flex items-center justify-center
-          transition-all duration-300
-          ${isDragActive ? 'bg-white/10 border-white/40 scale-110' : 'group-hover:bg-white/5 group-hover:border-white/30'}
-        `}>
+        {/* Brush icon */}
+        <div className="mx-auto mb-8 w-16 h-16 flex items-center justify-center">
           <svg
-            width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-            className="text-white/50 group-hover:text-white/70 transition-colors"
+            width="32" height="32" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"
+            className="transition-colors duration-500"
+            style={{ color: 'var(--paper-dim)' }}
           >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" opacity="0" />
+            <path d="M12 19l7-7 3 3-7 7-3-3z" />
+            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+            <path d="M2 2l7.5 8.5" />
           </svg>
         </div>
 
-        <p className="text-base font-serif text-white/60 group-hover:text-white/80 transition-colors tracking-wide">
-          {isDragActive ? '松开即可上传' : '点击或拖拽上传图片'}
+        <p
+          className="text-base font-serif tracking-[0.15em] mb-3 transition-colors duration-500"
+          style={{ color: isDragActive ? 'var(--paper)' : 'var(--paper-dim)' }}
+        >
+          {isDragActive ? '松开即可' : '点击或拖拽'}
         </p>
-        <p className="text-xs text-white/25 mt-3 tracking-wider">
-          PNG · JPG · WebP · 最大 10MB
+        <p className="text-xs tracking-[0.2em]" style={{ color: 'var(--ink-mid)' }}>
+          PNG · JPG · WebP
         </p>
       </div>
     </div>

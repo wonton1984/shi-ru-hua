@@ -36,14 +36,28 @@ export function SaveButton({ targetRef, filename }: SaveButtonProps) {
       onClick={handleSave}
       disabled={saving}
       className="
-        px-4 py-2 rounded-lg
-        bg-white/10 hover:bg-white/20
-        backdrop-blur-sm
-        text-white text-sm font-serif
-        border border-white/20
-        transition-colors
-        disabled:opacity-50
+        px-5 py-2.5 rounded-sm
+        text-sm font-serif tracking-wider
+        border transition-all duration-500
+        hover:scale-105
+        disabled:opacity-40 disabled:hover:scale-100
       "
+      style={{
+        backgroundColor: 'rgba(20, 18, 16, 0.6)',
+        borderColor: 'var(--ink-mid)',
+        color: 'var(--paper-dim)',
+        backdropFilter: 'blur(12px)',
+      }}
+      onMouseEnter={(e) => {
+        if (!saving) {
+          e.currentTarget.style.borderColor = 'var(--cinnabar)';
+          e.currentTarget.style.color = 'var(--paper)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'var(--ink-mid)';
+        e.currentTarget.style.color = 'var(--paper-dim)';
+      }}
     >
       {saving ? '保存中…' : '保存图卡'}
     </button>

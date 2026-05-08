@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import type { MatchResult, GridPosition } from '@/lib/types';
 
 interface ImmersiveViewProps {
@@ -10,61 +10,61 @@ interface ImmersiveViewProps {
 
 const PLACEMENT_CONFIG: Record<
   GridPosition,
-  { style: React.CSSProperties; gradient: string; writingMode: 'horizontal-tb' | 'vertical-rl'; align: string }
+  { style: React.CSSProperties; gradient: string; isVertical: boolean; alignClass: string }
 > = {
   'top-left': {
-    style: { top: '6%', left: '5%' },
-    gradient: 'bg-gradient-to-b from-black/50 via-transparent to-transparent',
-    writingMode: 'horizontal-tb',
-    align: 'text-left',
+    style: { top: '8%', left: '6%' },
+    gradient: 'linear-gradient(to bottom, rgba(20,18,16,0.5) 0%, transparent 40%)',
+    isVertical: false,
+    alignClass: 'text-left',
   },
   'top': {
-    style: { top: '6%', left: '50%', transform: 'translateX(-50%)' },
-    gradient: 'bg-gradient-to-b from-black/50 via-transparent to-transparent',
-    writingMode: 'horizontal-tb',
-    align: 'text-center',
+    style: { top: '8%', left: '50%', transform: 'translateX(-50%)' },
+    gradient: 'linear-gradient(to bottom, rgba(20,18,16,0.5) 0%, transparent 40%)',
+    isVertical: false,
+    alignClass: 'text-center',
   },
   'top-right': {
-    style: { top: '6%', right: '5%' },
-    gradient: 'bg-gradient-to-b from-black/50 via-transparent to-transparent',
-    writingMode: 'horizontal-tb',
-    align: 'text-right',
+    style: { top: '8%', right: '6%' },
+    gradient: 'linear-gradient(to bottom, rgba(20,18,16,0.5) 0%, transparent 40%)',
+    isVertical: false,
+    alignClass: 'text-right',
   },
   'left': {
-    style: { top: '50%', left: '4%', transform: 'translateY(-50%)' },
-    gradient: 'bg-gradient-to-r from-black/40 via-transparent to-transparent',
-    writingMode: 'vertical-rl',
-    align: 'text-left',
+    style: { top: '50%', left: '5%', transform: 'translateY(-50%)' },
+    gradient: 'linear-gradient(to right, rgba(20,18,16,0.35) 0%, transparent 50%)',
+    isVertical: true,
+    alignClass: 'text-left',
   },
   'center': {
     style: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
     gradient: '',
-    writingMode: 'horizontal-tb',
-    align: 'text-center',
+    isVertical: false,
+    alignClass: 'text-center',
   },
   'right': {
-    style: { top: '50%', right: '4%', transform: 'translateY(-50%)' },
-    gradient: 'bg-gradient-to-l from-black/40 via-transparent to-transparent',
-    writingMode: 'vertical-rl',
-    align: 'text-right',
+    style: { top: '50%', right: '5%', transform: 'translateY(-50%)' },
+    gradient: 'linear-gradient(to left, rgba(20,18,16,0.35) 0%, transparent 50%)',
+    isVertical: true,
+    alignClass: 'text-right',
   },
   'bottom-left': {
-    style: { bottom: '6%', left: '5%' },
-    gradient: 'bg-gradient-to-t from-black/60 via-black/20 to-transparent',
-    writingMode: 'horizontal-tb',
-    align: 'text-left',
+    style: { bottom: '10%', left: '6%' },
+    gradient: 'linear-gradient(to top, rgba(20,18,16,0.6) 0%, transparent 50%)',
+    isVertical: false,
+    alignClass: 'text-left',
   },
   'bottom': {
-    style: { bottom: '6%', left: '50%', transform: 'translateX(-50%)' },
-    gradient: 'bg-gradient-to-t from-black/60 via-black/20 to-transparent',
-    writingMode: 'horizontal-tb',
-    align: 'text-center',
+    style: { bottom: '10%', left: '50%', transform: 'translateX(-50%)' },
+    gradient: 'linear-gradient(to top, rgba(20,18,16,0.6) 0%, transparent 50%)',
+    isVertical: false,
+    alignClass: 'text-center',
   },
   'bottom-right': {
-    style: { bottom: '6%', right: '5%' },
-    gradient: 'bg-gradient-to-t from-black/60 via-black/20 to-transparent',
-    writingMode: 'horizontal-tb',
-    align: 'text-right',
+    style: { bottom: '10%', right: '6%' },
+    gradient: 'linear-gradient(to top, rgba(20,18,16,0.6) 0%, transparent 50%)',
+    isVertical: false,
+    alignClass: 'text-right',
   },
 };
 
@@ -80,9 +80,9 @@ function sampleBrightness(imageSrc: string, placement: GridPosition): Promise<'l
       ctx.drawImage(img, 0, 0);
 
       const regions: Record<GridPosition, [number, number, number, number]> = {
-        'top-left': [0, 0, 1 / 3, 1 / 3], 'top': [1 / 3, 0, 2 / 3, 1 / 3], 'top-right': [2 / 3, 0, 1, 1 / 3],
-        'left': [0, 1 / 3, 1 / 3, 2 / 3], 'center': [1 / 3, 1 / 3, 2 / 3, 2 / 3], 'right': [2 / 3, 1 / 3, 1, 2 / 3],
-        'bottom-left': [0, 2 / 3, 1 / 3, 1], 'bottom': [1 / 3, 2 / 3, 2 / 3, 1], 'bottom-right': [2 / 3, 2 / 3, 1, 1],
+        'top-left': [0, 0, 1/3, 1/3], 'top': [1/3, 0, 2/3, 1/3], 'top-right': [2/3, 0, 1, 1/3],
+        'left': [0, 1/3, 1/3, 2/3], 'center': [1/3, 1/3, 2/3, 2/3], 'right': [2/3, 1/3, 1, 2/3],
+        'bottom-left': [0, 2/3, 1/3, 1], 'bottom': [1/3, 2/3, 2/3, 1], 'bottom-right': [2/3, 2/3, 1, 1],
       };
 
       const [x1, y1, x2, y2] = regions[placement];
@@ -95,8 +95,8 @@ function sampleBrightness(imageSrc: string, placement: GridPosition): Promise<'l
         const imageData = ctx.getImageData(sx, sy, ex - sx, ey - sy);
         let total = 0;
         let count = 0;
-        const stepX = Math.max(1, Math.floor((ex - sx) / 8));
-        const stepY = Math.max(1, Math.floor((ey - sy) / 8));
+        const stepX = Math.max(1, Math.floor((ex - sx) / 6));
+        const stepY = Math.max(1, Math.floor((ey - sy) / 6));
 
         for (let y = 0; y < ey - sy; y += stepY) {
           for (let x = 0; x < ex - sx; x += stepX) {
@@ -108,7 +108,7 @@ function sampleBrightness(imageSrc: string, placement: GridPosition): Promise<'l
         }
 
         const avg = total / count;
-        resolve(avg > 140 ? 'light' : 'dark');
+        resolve(avg > 150 ? 'light' : 'dark');
       } catch {
         resolve('dark');
       }
@@ -121,94 +121,103 @@ function sampleBrightness(imageSrc: string, placement: GridPosition): Promise<'l
 export function ImmersiveView({ image, result }: ImmersiveViewProps) {
   const [brightness, setBrightness] = useState<'light' | 'dark'>('dark');
   const [visible, setVisible] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const config = PLACEMENT_CONFIG[result.text_placement];
-  const isVertical = config.writingMode === 'vertical-rl';
+  const isVertical = config.isVertical;
 
   useEffect(() => {
     setVisible(false);
     sampleBrightness(image, result.text_placement).then((b) => {
       setBrightness(b);
-      // Staggered reveal
       requestAnimationFrame(() => {
-        setTimeout(() => setVisible(true), 100);
+        setTimeout(() => setVisible(true), 200);
       });
     });
   }, [image, result.text_placement]);
 
-  const textColor = brightness === 'light'
-    ? 'text-neutral-900'
-    : 'text-white';
+  const textColor = brightness === 'light' ? 'rgba(30,25,20,0.95)' : 'rgba(232,224,208,0.95)';
+  const inkShadow = brightness === 'light'
+    ? '0 1px 8px rgba(255,255,255,0.6), 0 0 40px rgba(255,255,255,0.2)'
+    : '0 2px 20px rgba(0,0,0,0.9), 0 0 60px rgba(0,0,0,0.4), 0 0 120px rgba(0,0,0,0.15)';
 
-  const shadowClass = brightness === 'light'
-    ? 'drop-shadow-[0_1px_3px_rgba(255,255,255,0.9)]'
-    : 'drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]';
+  // Split line into characters for staggered animation
+  const chars = result.line.split('');
 
   return (
-    <div ref={containerRef} className="relative w-full h-full overflow-hidden">
-      {/* Background image */}
+    <div className="relative w-full h-full overflow-hidden">
+      {/* Background image with subtle zoom */}
       <img
         src={image}
         alt="Uploaded"
-        className="absolute inset-0 w-full h-full object-cover"
+        className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] ease-out ${
+          visible ? 'scale-100' : 'scale-105'
+        }`}
       />
 
       {/* Gradient overlay for readability */}
       {config.gradient && (
-        <div className={`absolute inset-0 ${config.gradient}`} />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: config.gradient }}
+        />
       )}
 
-      {/* Poetry text container */}
+      {/* Poem text container */}
       <div
-        className={`absolute ${textColor} ${shadowClass} ${config.align}`}
+        className={`absolute ${config.alignClass}`}
         style={{
           ...config.style,
-          writingMode: config.writingMode,
+          writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb',
         }}
       >
-        {/* Poem line with reveal animation */}
-        <div
-          className={`
-            transition-all duration-1000 ease-out
-            ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
-          `}
-        >
+        {/* Poem line - character by character ink bloom */}
+        <div className={isVertical ? 'h-auto' : ''}>
           <p
-            className={`
-              font-serif tracking-widest leading-relaxed
-              ${isVertical ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-3xl md:text-4xl lg:text-5xl'}
-            `}
+            className={`font-serif leading-relaxed ${
+              isVertical
+                ? 'text-2xl md:text-3xl lg:text-4xl tracking-[0.25em]'
+                : 'text-3xl md:text-4xl lg:text-5xl tracking-[0.15em]'
+            }`}
             style={{
-              textShadow: brightness === 'dark'
-                ? '0 2px 20px rgba(0,0,0,0.8), 0 0 60px rgba(0,0,0,0.4)'
-                : '0 2px 20px rgba(255,255,255,0.6), 0 0 60px rgba(255,255,255,0.3)',
+              color: textColor,
+              textShadow: inkShadow,
             }}
           >
-            {result.line}
+            {chars.map((char, i) => (
+              <span
+                key={i}
+                className="inline-block animate-ink-bloom"
+                style={{ animationDelay: `${0.3 + i * 0.06}s` }}
+              >
+                {char}
+              </span>
+            ))}
           </p>
         </div>
 
-        {/* Author info with delayed reveal */}
+        {/* Author & title - seal style */}
         <div
-          className={`
-            transition-all duration-1000 ease-out delay-300
-            ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}
-          `}
+          className="animate-ink-bloom mt-5"
+          style={{ animationDelay: `${0.3 + chars.length * 0.06 + 0.3}s` }}
         >
-          <p
-            className={`
-              mt-4 text-sm md:text-base tracking-wider opacity-75
-              ${isVertical ? 'mt-0 ml-4' : ''}
-            `}
-            style={{
-              textShadow: brightness === 'dark'
-                ? '0 1px 10px rgba(0,0,0,0.7)'
-                : '0 1px 10px rgba(255,255,255,0.5)',
-            }}
+          <div
+            className={`inline-flex items-center gap-2 ${isVertical ? 'mt-0 ml-5 flex-col' : ''}`}
           >
-            {result.author} · {result.title}
-          </p>
+            {/* Small seal dot */}
+            <div
+              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: 'var(--cinnabar)', opacity: 0.7 }}
+            />
+            <span
+              className="text-sm md:text-base tracking-[0.15em] font-serif"
+              style={{
+                color: brightness === 'light' ? 'rgba(30,25,20,0.6)' : 'rgba(232,224,208,0.55)',
+                textShadow: brightness === 'dark' ? '0 1px 10px rgba(0,0,0,0.7)' : '0 1px 6px rgba(255,255,255,0.4)',
+              }}
+            >
+              {result.author} · {result.title}
+            </span>
+          </div>
         </div>
       </div>
     </div>

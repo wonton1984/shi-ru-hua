@@ -51,17 +51,24 @@ export default function HomePage() {
   };
 
   return (
-    <main className="w-full h-screen bg-neutral-950">
+    <main className="w-full h-screen relative" style={{ backgroundColor: 'var(--ink-deep)' }}>
       {phase === 'upload' && (
         <div className="flex flex-col items-center justify-center h-full px-4">
-          {/* Brand */}
-          <div className="text-center mb-10">
-            <h1 className="text-5xl font-serif text-white tracking-[0.15em] mb-3"
+          {/* Brand seal */}
+          <div className="text-center mb-12">
+            <h1
+              className="text-6xl font-serif tracking-[0.25em] mb-4"
+              style={{ color: 'var(--paper)' }}
             >
               诗入画
             </h1>
-            <div className="w-8 h-px bg-white/20 mx-auto mb-3" />
-            <p className="text-white/30 text-sm tracking-[0.2em] font-serif"
+            <div
+              className="w-12 h-px mx-auto mb-4"
+              style={{ backgroundColor: 'var(--gold)', opacity: 0.4 }}
+            />
+            <p
+              className="text-sm tracking-[0.3em] font-serif"
+              style={{ color: 'var(--paper-dim)' }}
             >
               上传图片，匹配唐诗名句
             </p>
@@ -70,13 +77,16 @@ export default function HomePage() {
           <UploadZone onImageSelect={handleImageSelect} />
 
           {error && (
-            <p className="mt-6 text-red-400/80 text-sm tracking-wide"
-            >{error}</p>
+            <p className="mt-8 text-sm tracking-wide" style={{ color: 'var(--cinnabar)' }}>
+              {error}
+            </p>
           )}
 
-          <p className="mt-10 text-white/15 text-xs tracking-wider"
-    >
-             powered by Kimi K2.6
+          <p
+            className="mt-12 text-xs tracking-[0.2em]"
+            style={{ color: 'var(--ink-mid)' }}
+          >
+            powered by Kimi K2.6
           </p>
         </div>
       )}
@@ -93,9 +103,8 @@ export default function HomePage() {
             <ImmersiveView image={image} result={result} />
           </div>
 
-          {/* Top-right controls */}
-          <div className="absolute top-5 right-5 flex gap-2 z-10"
-      >
+          {/* Controls */}
+          <div className="absolute top-5 right-5 flex gap-3 z-10">
             <SaveButton
               targetRef={resultRef}
               filename={`${result.author}-${result.title}-${Date.now()}.png`}
@@ -103,13 +112,25 @@ export default function HomePage() {
             <button
               onClick={handleReset}
               className="
-                px-4 py-2 rounded-lg
-                bg-black/30 hover:bg-black/50
-                backdrop-blur-md
-                text-white/70 hover:text-white text-sm font-serif
-                border border-white/10 hover:border-white/20
-                transition-all duration-300
+                px-5 py-2.5 rounded-sm
+                text-sm font-serif tracking-wider
+                border transition-all duration-500
+                hover:scale-105
               "
+              style={{
+                backgroundColor: 'rgba(20, 18, 16, 0.6)',
+                borderColor: 'var(--ink-mid)',
+                color: 'var(--paper-dim)',
+                backdropFilter: 'blur(12px)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--gold)';
+                e.currentTarget.style.color = 'var(--paper)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--ink-mid)';
+                e.currentTarget.style.color = 'var(--paper-dim)';
+              }}
             >
               再来一张
             </button>
