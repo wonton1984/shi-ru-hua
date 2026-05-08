@@ -21,7 +21,6 @@ function buildTagPrompt(): string {
 
 额外返回：
 - subject_region: 主体在画面中的九宫格位置
-- text_placement: 建议放置诗句的九宫格位置（远离主体，视觉平衡）
 
 九宫格可选值：top-left | top | top-right | left | center | right | bottom-left | bottom | bottom-right
 
@@ -34,8 +33,7 @@ function buildTagPrompt(): string {
     "scenes": [...],
     "palette": [...]
   },
-  "subject_region": "...",
-  "text_placement": "..."
+  "subject_region": "..."
 }`;
 }
 
@@ -104,11 +102,26 @@ export async function extractTags(base64Image: string): Promise<ImageAnalysis> {
   const subject_region = isValidGridPosition(parsed.subject_region)
     ? parsed.subject_region
     : 'center';
-  const text_placement = isValidGridPosition(parsed.text_placement)
-    ? parsed.text_placement
-    : 'bottom-right';
+
+  // Local algorithm: place text diagonally opposite to subject
+  const text_placement = computeTextPlacement(subject_region);
 
   return { tags, subject_region, text_placement };
+}
+
+function computeTextPlacement(subjectRegion: GridPosition): GridPosition {
+  const diagonalMap: Record<GridPosition, GridPosition> = {
+    'top-left': 'bottom-right',
+    'top': 'bottom',
+    'top-right': 'bottom-left',
+    'left': 'right',
+    'center': 'bottom',
+    'right': 'left',
+    'bottom-left': 'top-right',
+    'bottom': 'top',
+    'bottom-right': 'top-left',
+  };
+  return diagonalMap[subjectRegion];
 }
 
 export async function selectBestMatch(

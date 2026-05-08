@@ -51,15 +51,33 @@ export default function HomePage() {
   };
 
   return (
-    <main className="w-full h-screen bg-neutral-900">
+    <main className="w-full h-screen bg-neutral-950">
       {phase === 'upload' && (
         <div className="flex flex-col items-center justify-center h-full px-4">
-          <h1 className="text-4xl font-serif text-white mb-2">诗入画</h1>
-          <p className="text-white/40 text-sm mb-8">上传图片，匹配唐诗名句</p>
+          {/* Brand */}
+          <div className="text-center mb-10">
+            <h1 className="text-5xl font-serif text-white tracking-[0.15em] mb-3"
+            >
+              诗入画
+            </h1>
+            <div className="w-8 h-px bg-white/20 mx-auto mb-3" />
+            <p className="text-white/30 text-sm tracking-[0.2em] font-serif"
+            >
+              上传图片，匹配唐诗名句
+            </p>
+          </div>
+
           <UploadZone onImageSelect={handleImageSelect} />
+
           {error && (
-            <p className="mt-4 text-red-400 text-sm">{error}</p>
+            <p className="mt-6 text-red-400/80 text-sm tracking-wide"
+            >{error}</p>
           )}
+
+          <p className="mt-10 text-white/15 text-xs tracking-wider"
+    >
+             powered by Kimi K2.6
+          </p>
         </div>
       )}
 
@@ -74,16 +92,26 @@ export default function HomePage() {
           <div ref={resultRef} className="h-full">
             <ImmersiveView image={image} result={result} />
           </div>
-          <div className="absolute top-4 right-4 flex gap-2 z-10">
+
+          {/* Top-right controls */}
+          <div className="absolute top-5 right-5 flex gap-2 z-10"
+      >
             <SaveButton
               targetRef={resultRef}
-              filename={`唐诗-${result.author}-${result.title}-${Date.now()}.png`}
+              filename={`${result.author}-${result.title}-${Date.now()}.png`}
             />
             <button
               onClick={handleReset}
-              className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white text-sm font-serif border border-white/20 transition-colors"
+              className="
+                px-4 py-2 rounded-lg
+                bg-black/30 hover:bg-black/50
+                backdrop-blur-md
+                text-white/70 hover:text-white text-sm font-serif
+                border border-white/10 hover:border-white/20
+                transition-all duration-300
+              "
             >
-              重新开始
+              再来一张
             </button>
           </div>
         </div>
