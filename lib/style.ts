@@ -16,7 +16,7 @@ const DEFAULT_STYLE: PoemStyle = {
 const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   // 豪放类 — 大气磅礴
   豪迈: {
-    fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', cursive",
+    fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.2em',
     lineHeight: 1.3,
@@ -27,7 +27,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '气壮',
   },
   激昂: {
-    fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', cursive",
+    fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.2em',
     lineHeight: 1.3,
@@ -38,7 +38,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '激昂',
   },
   壮志: {
-    fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', cursive",
+    fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.2em',
     lineHeight: 1.3,
@@ -119,7 +119,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
 
   // 离愁类 — 行书，横排偏疏朗
   离愁: {
-    fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', cursive",
+    fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.12em',
     lineHeight: 1.4,
@@ -130,7 +130,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '别',
   },
   思乡: {
-    fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', cursive",
+    fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.12em',
     lineHeight: 1.4,
@@ -141,7 +141,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '乡',
   },
   温情: {
-    fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', cursive",
+    fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.12em',
     lineHeight: 1.4,
@@ -154,7 +154,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
 
   // 恬淡类 — 隶书，温润
   闲适: {
-    fontFamily: "'Long Cang', 'Noto Serif SC', cursive",
+    fontFamily: "'Long Cang', 'Noto Serif SC', serif",
     fontSize: 'text-4xl md:text-5xl lg:text-6xl',
     tracking: '0.18em',
     lineHeight: 1.5,
@@ -165,7 +165,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '闲',
   },
   恬淡: {
-    fontFamily: "'Long Cang', 'Noto Serif SC', cursive",
+    fontFamily: "'Long Cang', 'Noto Serif SC', serif",
     fontSize: 'text-4xl md:text-5xl lg:text-6xl',
     tracking: '0.18em',
     lineHeight: 1.5,
@@ -176,7 +176,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '淡',
   },
   旷达: {
-    fontFamily: "'Long Cang', 'Noto Serif SC', cursive",
+    fontFamily: "'Long Cang', 'Noto Serif SC', serif",
     fontSize: 'text-4xl md:text-5xl lg:text-6xl',
     tracking: '0.18em',
     lineHeight: 1.5,
@@ -187,7 +187,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '达',
   },
   逍遥: {
-    fontFamily: "'Long Cang', 'Noto Serif SC', cursive",
+    fontFamily: "'Long Cang', 'Noto Serif SC', serif",
     fontSize: 'text-4xl md:text-5xl lg:text-6xl',
     tracking: '0.18em',
     lineHeight: 1.5,
@@ -200,7 +200,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
 
   // 悲怆类 — 草书，苍劲
   悲凉: {
-    fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', cursive",
+    fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.1em',
     lineHeight: 1.35,
@@ -211,7 +211,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '沧',
   },
   怀古: {
-    fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', cursive",
+    fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.1em',
     lineHeight: 1.35,
@@ -222,7 +222,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
     sealText: '古',
   },
   怅惘: {
-    fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', cursive",
+    fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.1em',
     lineHeight: 1.35,
@@ -235,7 +235,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
 
   // 喜悦
   喜悦: {
-    fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', cursive",
+    fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
     fontSize: 'text-5xl md:text-6xl lg:text-7xl',
     tracking: '0.15em',
     lineHeight: 1.35,
