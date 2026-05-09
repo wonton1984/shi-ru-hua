@@ -2,7 +2,7 @@ import type { PoemStyle } from './types';
 
 const DEFAULT_STYLE: PoemStyle = {
   fontFamily: "'Noto Serif SC', 'Source Han Serif SC', serif",
-  fontSize: 'text-4xl md:text-5xl lg:text-6xl',
+  fontSize: 'text-5xl md:text-6xl lg:text-7xl',
   tracking: '0.15em',
   lineHeight: 1.4,
   isVertical: false,
@@ -17,8 +17,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   // 豪放类 — 大气磅礴
   豪迈: {
     fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
-    tracking: '0.2em',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
+    tracking: '0.15em',
     lineHeight: 1.3,
     isVertical: false,
     textColor: 'rgba(255,248,220,0.95)',
@@ -28,8 +28,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   激昂: {
     fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
-    tracking: '0.2em',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
+    tracking: '0.15em',
     lineHeight: 1.3,
     isVertical: false,
     textColor: 'rgba(255,248,220,0.95)',
@@ -39,8 +39,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   壮志: {
     fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
-    tracking: '0.2em',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
+    tracking: '0.15em',
     lineHeight: 1.3,
     isVertical: false,
     textColor: 'rgba(255,248,220,0.95)',
@@ -52,8 +52,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   // 婉约类 — 纤细清冷，竖排
   孤独: {
     fontFamily: "'ZCOOL XiaoWei', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.35em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.25em',
     lineHeight: 1.7,
     isVertical: true,
     textColor: 'rgba(232,224,208,0.85)',
@@ -63,8 +63,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   忧伤: {
     fontFamily: "'ZCOOL XiaoWei', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.35em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.25em',
     lineHeight: 1.7,
     isVertical: true,
     textColor: 'rgba(232,224,208,0.85)',
@@ -74,8 +74,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   哀怨: {
     fontFamily: "'ZCOOL XiaoWei', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.35em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.25em',
     lineHeight: 1.7,
     isVertical: true,
     textColor: 'rgba(232,224,208,0.85)',
@@ -85,8 +85,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   愁绪: {
     fontFamily: "'ZCOOL XiaoWei', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.35em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.25em',
     lineHeight: 1.7,
     isVertical: true,
     textColor: 'rgba(232,224,208,0.85)',
@@ -96,8 +96,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   寂寥: {
     fontFamily: "'ZCOOL XiaoWei', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.4em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.3em',
     lineHeight: 1.8,
     isVertical: true,
     textColor: 'rgba(220,215,200,0.8)',
@@ -107,8 +107,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   幽静: {
     fontFamily: "'ZCOOL XiaoWei', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.4em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.3em',
     lineHeight: 1.8,
     isVertical: true,
     textColor: 'rgba(220,215,200,0.8)',
@@ -120,8 +120,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   // 离愁类 — 行书，横排偏疏朗
   离愁: {
     fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
-    tracking: '0.12em',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
+    tracking: '0.1em',
     lineHeight: 1.4,
     isVertical: false,
     textColor: 'rgba(255,245,230,0.9)',
@@ -131,8 +131,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   思乡: {
     fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
-    tracking: '0.12em',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
+    tracking: '0.1em',
     lineHeight: 1.4,
     isVertical: false,
     textColor: 'rgba(255,245,230,0.9)',
@@ -142,8 +142,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   温情: {
     fontFamily: "'Zhi Mang Xing', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
-    tracking: '0.12em',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
+    tracking: '0.1em',
     lineHeight: 1.4,
     isVertical: false,
     textColor: 'rgba(255,245,230,0.9)',
@@ -155,8 +155,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   // 恬淡类 — 隶书，温润
   闲适: {
     fontFamily: "'Long Cang', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.18em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.15em',
     lineHeight: 1.5,
     isVertical: false,
     textColor: 'rgba(245,240,225,0.92)',
@@ -166,8 +166,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   恬淡: {
     fontFamily: "'Long Cang', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.18em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.15em',
     lineHeight: 1.5,
     isVertical: false,
     textColor: 'rgba(245,240,225,0.92)',
@@ -177,8 +177,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   旷达: {
     fontFamily: "'Long Cang', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.18em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.15em',
     lineHeight: 1.5,
     isVertical: false,
     textColor: 'rgba(245,240,225,0.92)',
@@ -188,8 +188,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   逍遥: {
     fontFamily: "'Long Cang', 'Noto Serif SC', serif",
-    fontSize: 'text-4xl md:text-5xl lg:text-6xl',
-    tracking: '0.18em',
+    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    tracking: '0.15em',
     lineHeight: 1.5,
     isVertical: false,
     textColor: 'rgba(245,240,225,0.92)',
@@ -201,7 +201,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   // 悲怆类 — 草书，苍劲
   悲凉: {
     fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
     tracking: '0.1em',
     lineHeight: 1.35,
     isVertical: false,
@@ -212,7 +212,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   怀古: {
     fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
     tracking: '0.1em',
     lineHeight: 1.35,
     isVertical: false,
@@ -223,7 +223,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   },
   怅惘: {
     fontFamily: "'Liu Jian Mao Cao', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
     tracking: '0.1em',
     lineHeight: 1.35,
     isVertical: false,
@@ -236,7 +236,7 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
   // 喜悦
   喜悦: {
     fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
-    fontSize: 'text-5xl md:text-6xl lg:text-7xl',
+    fontSize: 'text-6xl md:text-7xl lg:text-8xl',
     tracking: '0.15em',
     lineHeight: 1.35,
     isVertical: false,
