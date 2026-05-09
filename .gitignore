@@ -4,3 +4,6 @@
 .env.local
 *.log
 /scripts
+
+# Local Netlify folder
+.netlify

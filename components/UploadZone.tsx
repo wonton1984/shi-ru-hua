@@ -27,16 +27,17 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
     [onImageSelect]
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
     accept: {
-      'image/png': ['.png'],
-      'image/jpeg': ['.jpg', '.jpeg'],
-      'image/webp': ['.webp'],
+      'image/*': ['.png', '.jpg', '.jpeg', '.webp'],
     },
     maxSize: 10 * 1024 * 1024,
     multiple: false,
+    useFsAccessApi: false,
   });
+
+  const rejectionMsg = fileRejections[0]?.errors[0]?.message;
 
   return (
     <div
@@ -114,6 +115,11 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
         <p className="text-xs tracking-[0.2em]" style={{ color: 'var(--ink-mid)' }}>
           PNG · JPG · WebP
         </p>
+        {rejectionMsg && (
+          <p className="mt-3 text-xs" style={{ color: 'var(--cinnabar)', opacity: 0.8 }}>
+            {rejectionMsg.includes('size') ? '图片超过10MB限制' : '不支持的文件格式'}
+          </p>
+        )}
       </div>
     </div>
   );
