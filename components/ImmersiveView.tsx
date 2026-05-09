@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { MatchResult, GridPosition } from '@/lib/types';
 
 interface ImmersiveViewProps {
@@ -24,9 +24,56 @@ const PLACEMENT_STYLES: Record<
   'bottom-right':{ style: { bottom: '10%', right: '6%' }, alignClass: 'text-right' },
 };
 
+function computeFontSize(
+  cw: number,
+  ch: number,
+  isVertical: boolean,
+  charsPerLine: number,
+  isCouplet: boolean,
+  coupletLineCount: number
+): number {
+  if (cw <= 0 || ch <= 0) return 48;
+
+  // tracking 占字号的约 10%
+  const trackingRatio = 0.12;
+  const charWidth = 1 + trackingRatio;
+
+  if (isVertical) {
+    // 竖排：限制因素是容器高度（文字纵向排列）
+    // 文字高度 = charsPerLine * fontSize，需 < ch * 0.6
+    const maxByHeight = (ch * 0.55) / charsPerLine;
+    // 同时限制宽度：两行竖排总宽度约 2 * fontSize，需 < cw * 0.5
+    const maxByWidth = coupletLineCount > 1 ? (cw * 0.4) / coupletLineCount : cw * 0.25;
+    return Math.max(16, Math.min(72, maxByHeight, maxByWidth));
+  }
+
+  if (isCouplet && coupletLineCount === 1) {
+    // 五言两句一行：总宽度 = totalChars * fontSize * charWidth，需 < cw * 0.8
+    const totalChars = charsPerLine * 2 + 1; // +1 是中间空格
+    const maxByWidth = (cw * 0.75) / (totalChars * charWidth);
+    // 同时限制高度：一行字，需 < ch * 0.25
+    const maxByHeight = ch * 0.2;
+    return Math.max(16, Math.min(80, maxByWidth, maxByHeight));
+  }
+
+  if (isCouplet && coupletLineCount === 2) {
+    // 七言两行：每行宽度 = charsPerLine * fontSize * charWidth，需 < cw * 0.8
+    const maxByWidth = (cw * 0.75) / (charsPerLine * charWidth);
+    // 两行总高度 = 2 * fontSize * 1.4(lineHeight)，需 < ch * 0.3
+    const maxByHeight = (ch * 0.25) / 2.8;
+    return Math.max(16, Math.min(90, maxByWidth, maxByHeight));
+  }
+
+  // 单句
+  const maxByWidth = (cw * 0.75) / (charsPerLine * charWidth);
+  const maxByHeight = ch * 0.2;
+  return Math.max(16, Math.min(100, maxByWidth, maxByHeight));
+}
+
 export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps) {
   const [visible, setVisible] = useState(false);
-  const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
+  const innerRef = useRef<HTMLDivElement | null>(null);
 
   const style = result.style;
   const isVertical = style.isVertical;
@@ -37,46 +84,46 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
     return () => clearTimeout(t);
   }, [image, result.text_placement]);
 
+  // 监听容器尺寸
   useEffect(() => {
-    const img = new Image();
-    img.onload = () => {
-      setNaturalSize({ w: img.naturalWidth, h: img.naturalHeight });
+    const el = innerRef.current;
+    if (!el) return;
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      setContainerSize({ w: rect.width, h: rect.height });
     };
-    img.src = image;
-  }, [image]);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener('resize', update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, []);
 
   const config = PLACEMENT_STYLES[result.text_placement];
   const isBottom = result.text_placement.startsWith('bottom');
   const isTop = result.text_placement.startsWith('top');
 
-  // 对句显示逻辑
+  // 对句
   const couplet = result.couplet || [result.line];
   const isCouplet = couplet.length === 2;
   const charsPerLine = couplet[0]?.length || result.line.length;
-  const totalChars = isCouplet ? couplet[0].length + couplet[1].length : result.line.length;
+  const coupletLineCount = isCouplet && charsPerLine >= 7 ? 2 : 1;
 
-  // 字号：五言两句10字放一行，七言两句14字放两行
-  const dynamicFontSize = isCouplet && charsPerLine <= 5
-    ? `clamp(32px, ${65 / totalChars}vw, 80px)`  // 10字一行，字号稍小
-    : `clamp(42px, ${80 / charsPerLine}vw, 110px)`; // 单句或七言两行
+  // 根据容器尺寸计算字号
+  const fontSize = computeFontSize(
+    containerSize.w,
+    containerSize.h,
+    isVertical,
+    charsPerLine,
+    isCouplet,
+    coupletLineCount
+  );
 
-  // 计算容器尺寸：在视口内完整展示原图的最大尺寸
-  let containerW = '100%';
-  let containerH = '100%';
-  if (naturalSize && typeof window !== 'undefined') {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const imgRatio = naturalSize.w / naturalSize.h;
-    const vRatio = vw / vh;
-
-    if (vRatio > imgRatio) {
-      containerH = `${vh}px`;
-      containerW = `${vh * imgRatio}px`;
-    } else {
-      containerW = `${vw}px`;
-      containerH = `${vw / imgRatio}px`;
-    }
-  }
+  // 字间距：随字号调整，字号大则间距小
+  const tracking = fontSize > 60 ? '0.05em' : fontSize > 40 ? '0.08em' : '0.12em';
 
   // 印章位置：与诗句对角
   const sealPlacement: Record<GridPosition, GridPosition> = {
@@ -95,14 +142,21 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
   return (
     <div className="flex items-center justify-center w-full h-full bg-neutral-950">
       <div
-        ref={captureRef}
+        ref={(node) => {
+          innerRef.current = node;
+          if (typeof captureRef === 'function') {
+            captureRef(node);
+          } else if (captureRef) {
+            (captureRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          }
+        }}
         className="relative overflow-hidden"
-        style={{ width: containerW, height: containerH }}
+        style={{ width: '100%', height: '100%', maxWidth: '100vw', maxHeight: '100vh' }}
       >
         <img
           src={image}
           alt="Uploaded"
-          className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] ease-out ${
+          className={`absolute inset-0 w-full h-full object-contain transition-transform duration-[2000ms] ease-out ${
             visible ? 'scale-100' : 'scale-105'
           }`}
         />
@@ -153,41 +207,41 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
             writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb',
           }}
         >
-          {/* 诗句：五言两句一行，七言两句两行 */}
+          {/* 诗句 */}
           {isCouplet && charsPerLine >= 7 ? (
             // 七言两句 → 两行
-            <div style={{ whiteSpace: 'nowrap' }}>
+            <div>
               <p
-                className="leading-relaxed"
                 style={{
                   fontFamily: style.fontFamily,
-                  fontSize: dynamicFontSize,
-                  letterSpacing: charsPerLine <= 5 ? '0.08em' : charsPerLine <= 7 ? '0.1em' : '0.12em',
-                  lineHeight: 1.4,
+                  fontSize,
+                  letterSpacing: tracking,
+                  lineHeight: 1.35,
                   color: style.textColor,
                   textShadow: style.textShadow,
                   opacity: visible ? style.textOpacity : 0,
-                  transform: visible ? 'translateY(0)' : 'translateY(16px)',
+                  transform: visible ? 'translateY(0)' : 'translateY(12px)',
                   transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+                  whiteSpace: 'nowrap',
                   wordBreak: 'keep-all',
                 }}
               >
                 {couplet[0]}
               </p>
               <p
-                className="leading-relaxed"
                 style={{
                   fontFamily: style.fontFamily,
-                  fontSize: dynamicFontSize,
-                  letterSpacing: charsPerLine <= 5 ? '0.08em' : charsPerLine <= 7 ? '0.1em' : '0.12em',
-                  lineHeight: 1.4,
+                  fontSize,
+                  letterSpacing: tracking,
+                  lineHeight: 1.35,
                   color: style.textColor,
                   textShadow: style.textShadow,
                   opacity: visible ? style.textOpacity : 0,
-                  transform: visible ? 'translateY(0)' : 'translateY(16px)',
+                  transform: visible ? 'translateY(0)' : 'translateY(12px)',
                   transition: 'opacity 0.8s ease-out 0.15s, transform 0.8s ease-out 0.15s',
+                  whiteSpace: 'nowrap',
                   wordBreak: 'keep-all',
-                  marginTop: '0.3em',
+                  marginTop: '0.25em',
                 }}
               >
                 {couplet[1]}
@@ -196,16 +250,15 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
           ) : (
             // 五言两句一行，或单句
             <p
-              className="leading-relaxed"
               style={{
                 fontFamily: style.fontFamily,
-                fontSize: dynamicFontSize,
-                letterSpacing: charsPerLine <= 5 ? '0.08em' : charsPerLine <= 7 ? '0.1em' : '0.12em',
+                fontSize,
+                letterSpacing: tracking,
                 lineHeight: style.lineHeight,
                 color: style.textColor,
                 textShadow: style.textShadow,
                 opacity: visible ? style.textOpacity : 0,
-                transform: visible ? 'translateY(0)' : 'translateY(16px)',
+                transform: visible ? 'translateY(0)' : 'translateY(12px)',
                 transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
                 whiteSpace: 'nowrap',
                 wordBreak: 'keep-all',
@@ -215,20 +268,23 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
             </p>
           )}
 
+          {/* Author */}
           <div
-            className={`mt-5 ${isVertical ? 'mt-0 ml-6' : ''}`}
+            className={`mt-4 ${isVertical ? 'mt-0 ml-5' : ''}`}
             style={{
               opacity: visible ? 0.7 : 0,
-              transform: visible ? 'translateY(0)' : 'translateY(10px)',
+              transform: visible ? 'translateY(0)' : 'translateY(8px)',
               transition: 'opacity 0.8s ease-out 0.3s, transform 0.8s ease-out 0.3s',
             }}
           >
             <p
-              className="text-base md:text-lg tracking-[0.2em]"
               style={{
                 fontFamily: style.fontFamily,
+                fontSize: Math.max(12, fontSize * 0.22),
+                letterSpacing: '0.15em',
                 color: 'rgba(255,255,255,0.75)',
                 textShadow: '0 1px 10px rgba(0,0,0,0.8)',
+                whiteSpace: 'nowrap',
               }}
             >
               {result.author} · {result.title}
@@ -236,7 +292,7 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
           </div>
         </div>
 
-        {/* Seal / 印章 */}
+        {/* Seal */}
         {style.signature && style.sealText && (
           <div
             className="absolute pointer-events-none"
@@ -249,11 +305,11 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
             <div
               className="flex items-center justify-center"
               style={{
-                width: isVertical ? 40 : 48,
-                height: isVertical ? 48 : 40,
+                width: isVertical ? 36 : 44,
+                height: isVertical ? 44 : 36,
                 border: '2px solid rgba(180, 60, 47, 0.7)',
                 color: 'rgba(180, 60, 47, 0.85)',
-                fontSize: isVertical ? 14 : 16,
+                fontSize: isVertical ? 13 : 15,
                 fontFamily: style.fontFamily,
                 letterSpacing: 2,
                 writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb',
