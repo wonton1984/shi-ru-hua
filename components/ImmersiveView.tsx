@@ -199,7 +199,7 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
                 border: '2px solid rgba(180, 60, 47, 0.7)',
                 color: 'rgba(180, 60, 47, 0.85)',
                 fontSize: isVertical ? 14 : 16,
-                fontFamily: "'Ma Shan Zheng', cursive",
+                fontFamily: style.fontFamily,
                 letterSpacing: 2,
                 writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb',
                 textAlign: 'center',
