@@ -49,6 +49,10 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
   const isBottom = result.text_placement.startsWith('bottom');
   const isTop = result.text_placement.startsWith('top');
 
+  // 根据诗句长度动态计算字号，短句更大更醒目
+  const charCount = result.line.length;
+  const dynamicFontSize = `clamp(42px, ${80 / charCount}vw, 110px)`;
+
   // 计算容器尺寸：在视口内完整展示原图的最大尺寸
   let containerW = '100%';
   let containerH = '100%';
@@ -143,10 +147,11 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
           }}
         >
           <p
-            className={`leading-relaxed ${style.fontSize}`}
+            className="leading-relaxed"
             style={{
               fontFamily: style.fontFamily,
-              letterSpacing: style.tracking,
+              fontSize: dynamicFontSize,
+              letterSpacing: charCount <= 5 ? '0.08em' : charCount <= 7 ? '0.1em' : '0.12em',
               lineHeight: style.lineHeight,
               color: style.textColor,
               textShadow: style.textShadow,
