@@ -89,7 +89,18 @@ export default function HomePage() {
       setPhase('result');
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : '请求失败');
+      let msg = '请求失败';
+      if (err instanceof Error) {
+        msg = err.message;
+        if (msg.includes('fetch') || msg.includes('network')) {
+          msg = '网络连接失败，请检查网络后重试';
+        } else if (msg.includes('timeout') || msg.includes('abort')) {
+          msg = '请求超时，图片可能过大，请尝试压缩后重试';
+        } else if (msg.includes('500')) {
+          msg = '服务器处理失败，请稍后再试';
+        }
+      }
+      setError(msg);
       setPhase('upload');
     }
   };

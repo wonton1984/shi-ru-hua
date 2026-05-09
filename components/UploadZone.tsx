@@ -37,7 +37,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 50 * 1024 * 1024,
     multiple: false,
     useFsAccessApi: false,
   });

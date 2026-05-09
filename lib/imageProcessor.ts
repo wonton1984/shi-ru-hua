@@ -1,4 +1,4 @@
-export function resizeImage(file: File, maxSize = 1024): Promise<string> {
+export function resizeImage(file: File, maxSize = 768): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -11,7 +11,8 @@ export function resizeImage(file: File, maxSize = 1024): Promise<string> {
       canvas.height = Math.round(img.height * ratio);
       const ctx = canvas.getContext('2d')!;
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL('image/jpeg', 0.85));
+      // 降低质量减小 base64 体积，避免超过 Netlify 6MB 限制
+      resolve(canvas.toDataURL('image/jpeg', 0.7));
     };
 
     img.onerror = () => {
