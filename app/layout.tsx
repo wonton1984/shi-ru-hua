@@ -9,8 +9,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <head>
+        <link href="/fonts/fonts.css" rel="stylesheet" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=ZCOOL+XiaoWei&family=Long+Cang&family=Liu+Jian+Mao+Cao&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
