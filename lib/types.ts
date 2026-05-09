@@ -41,6 +41,7 @@ export interface ImageAnalysis {
 
 export interface MatchResult {
   line: string;
+  couplet: string[]; // 两句：[出句, 对句]
   title: string;
   author: string;
   full_poem: string;

@@ -13,6 +13,21 @@ function computeHash(base64Image: string): string {
   return createHash('sha256').update(base64Image).digest('hex').slice(0, 16);
 }
 
+function extractCouplet(line: string, fullPoem: string): string[] {
+  const sentences = fullPoem
+    .split(/[，。；！？\n]+/)
+    .map(s => s.trim())
+    .filter(s => s.length >= 2);
+
+  const idx = sentences.findIndex(s => s === line || s.includes(line) || line.includes(s));
+  if (idx === -1) return [line];
+
+  // 取同一联的两句（偶数索引为出句，奇数索引为对句）
+  const pairStart = Math.floor(idx / 2) * 2;
+  const couplet = sentences.slice(pairStart, pairStart + 2);
+  return couplet.length === 2 ? couplet : [line];
+}
+
 export async function POST(request: Request) {
   try {
     const { image } = (await request.json()) as { image: string };
@@ -72,8 +87,11 @@ export async function POST(request: Request) {
     const selectedPoem = (poems as Poem[]).find((p) => p.id === selectedId);
     const resultPoem = selectedPoem || top10[0]?.poem || SAFE_POEMS[0];
 
+    const couplet = extractCouplet(resultPoem.line, resultPoem.full_poem);
+
     const result: MatchResult = {
       line: resultPoem.line,
+      couplet,
       title: resultPoem.title,
       author: resultPoem.author,
       full_poem: resultPoem.full_poem,

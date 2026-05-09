@@ -49,9 +49,16 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
   const isBottom = result.text_placement.startsWith('bottom');
   const isTop = result.text_placement.startsWith('top');
 
-  // 根据诗句长度动态计算字号，短句更大更醒目
-  const charCount = result.line.length;
-  const dynamicFontSize = `clamp(42px, ${80 / charCount}vw, 110px)`;
+  // 对句显示逻辑
+  const couplet = result.couplet || [result.line];
+  const isCouplet = couplet.length === 2;
+  const charsPerLine = couplet[0]?.length || result.line.length;
+  const totalChars = isCouplet ? couplet[0].length + couplet[1].length : result.line.length;
+
+  // 字号：五言两句10字放一行，七言两句14字放两行
+  const dynamicFontSize = isCouplet && charsPerLine <= 5
+    ? `clamp(32px, ${65 / totalChars}vw, 80px)`  // 10字一行，字号稍小
+    : `clamp(42px, ${80 / charsPerLine}vw, 110px)`; // 单句或七言两行
 
   // 计算容器尺寸：在视口内完整展示原图的最大尺寸
   let containerW = '100%';
@@ -146,24 +153,67 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
             writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb',
           }}
         >
-          <p
-            className="leading-relaxed"
-            style={{
-              fontFamily: style.fontFamily,
-              fontSize: dynamicFontSize,
-              letterSpacing: charCount <= 5 ? '0.08em' : charCount <= 7 ? '0.1em' : '0.12em',
-              lineHeight: style.lineHeight,
-              color: style.textColor,
-              textShadow: style.textShadow,
-              opacity: visible ? style.textOpacity : 0,
-              transform: visible ? 'translateY(0)' : 'translateY(16px)',
-              transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
-              whiteSpace: 'nowrap',
-              wordBreak: 'keep-all',
-            }}
-          >
-            {result.line}
-          </p>
+          {/* 诗句：五言两句一行，七言两句两行 */}
+          {isCouplet && charsPerLine >= 7 ? (
+            // 七言两句 → 两行
+            <div style={{ whiteSpace: 'nowrap' }}>
+              <p
+                className="leading-relaxed"
+                style={{
+                  fontFamily: style.fontFamily,
+                  fontSize: dynamicFontSize,
+                  letterSpacing: charsPerLine <= 5 ? '0.08em' : charsPerLine <= 7 ? '0.1em' : '0.12em',
+                  lineHeight: 1.4,
+                  color: style.textColor,
+                  textShadow: style.textShadow,
+                  opacity: visible ? style.textOpacity : 0,
+                  transform: visible ? 'translateY(0)' : 'translateY(16px)',
+                  transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+                  wordBreak: 'keep-all',
+                }}
+              >
+                {couplet[0]}
+              </p>
+              <p
+                className="leading-relaxed"
+                style={{
+                  fontFamily: style.fontFamily,
+                  fontSize: dynamicFontSize,
+                  letterSpacing: charsPerLine <= 5 ? '0.08em' : charsPerLine <= 7 ? '0.1em' : '0.12em',
+                  lineHeight: 1.4,
+                  color: style.textColor,
+                  textShadow: style.textShadow,
+                  opacity: visible ? style.textOpacity : 0,
+                  transform: visible ? 'translateY(0)' : 'translateY(16px)',
+                  transition: 'opacity 0.8s ease-out 0.15s, transform 0.8s ease-out 0.15s',
+                  wordBreak: 'keep-all',
+                  marginTop: '0.3em',
+                }}
+              >
+                {couplet[1]}
+              </p>
+            </div>
+          ) : (
+            // 五言两句一行，或单句
+            <p
+              className="leading-relaxed"
+              style={{
+                fontFamily: style.fontFamily,
+                fontSize: dynamicFontSize,
+                letterSpacing: charsPerLine <= 5 ? '0.08em' : charsPerLine <= 7 ? '0.1em' : '0.12em',
+                lineHeight: style.lineHeight,
+                color: style.textColor,
+                textShadow: style.textShadow,
+                opacity: visible ? style.textOpacity : 0,
+                transform: visible ? 'translateY(0)' : 'translateY(16px)',
+                transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+                whiteSpace: 'nowrap',
+                wordBreak: 'keep-all',
+              }}
+            >
+              {isCouplet ? `${couplet[0]} ${couplet[1]}` : result.line}
+            </p>
+          )}
 
           <div
             className={`mt-5 ${isVertical ? 'mt-0 ml-6' : ''}`}
