@@ -20,6 +20,19 @@ export interface Poem {
   tags: PoemTags;
 }
 
+export interface PoemStyle {
+  fontFamily: string;
+  fontSize: string;
+  tracking: string;
+  lineHeight: number;
+  isVertical: boolean;
+  textColor: string;
+  textShadow: string;
+  textOpacity: number;
+  signature: boolean;
+  sealText: string;
+}
+
 export interface ImageAnalysis {
   tags: PoemTags;
   subject_region: GridPosition;
@@ -32,6 +45,7 @@ export interface MatchResult {
   author: string;
   full_poem: string;
   text_placement: GridPosition;
+  style: PoemStyle;
 }
 
 export interface Vocabulary {

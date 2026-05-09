@@ -3,6 +3,7 @@ import { createHash } from 'crypto';
 import { extractTags, selectBestMatch } from '@/lib/kimi';
 import { scorePoem } from '@/lib/score';
 import { getCached, setCached } from '@/lib/cache';
+import { computePoemStyle } from '@/lib/style';
 import poems from '@/data/poems.json';
 import type { Poem, MatchResult } from '@/lib/types';
 
@@ -77,6 +78,7 @@ export async function POST(request: Request) {
       author: resultPoem.author,
       full_poem: resultPoem.full_poem,
       text_placement: analysis.text_placement,
+      style: computePoemStyle(resultPoem.tags.moods),
     };
 
     setCached(hash, result);

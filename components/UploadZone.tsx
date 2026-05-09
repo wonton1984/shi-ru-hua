@@ -2,10 +2,10 @@
 
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { resizeImage } from '@/lib/imageProcessor';
+import { fileToBase64, resizeImage } from '@/lib/imageProcessor';
 
 interface UploadZoneProps {
-  onImageSelect: (image: string) => void;
+  onImageSelect: (original: string, forApi: string) => void;
 }
 
 export function UploadZone({ onImageSelect }: UploadZoneProps) {
@@ -14,8 +14,11 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
       const file = acceptedFiles[0];
       if (!file) return;
       try {
-        const resized = await resizeImage(file);
-        onImageSelect(resized);
+        const [original, forApi] = await Promise.all([
+          fileToBase64(file),
+          resizeImage(file),
+        ]);
+        onImageSelect(original, forApi);
       } catch (err) {
         alert('图片处理失败，请重试');
         console.error(err);
@@ -40,7 +43,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
       {...getRootProps()}
       className={`
         group relative flex flex-col items-center justify-center
-        w-72 md:w-80 aspect-[3/4]
+        w-80 md:w-96 lg:w-[28rem] aspect-[3/4]
         cursor-pointer
         transition-all duration-700 ease-out
         ${isDragActive ? 'scale-[1.03]' : 'hover:scale-[1.01]'}
@@ -52,7 +55,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
     >
       <input {...getInputProps()} />
 
-      {/* Inner frame - scroll-like border */}
+      {/* Inner frame */}
       <div
         className="absolute inset-3 transition-all duration-500 group-hover:inset-2.5"
         style={{
@@ -106,7 +109,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
           className="text-base font-serif tracking-[0.15em] mb-3 transition-colors duration-500"
           style={{ color: isDragActive ? 'var(--paper)' : 'var(--paper-dim)' }}
         >
-          {isDragActive ? '松开即可' : '点击或拖拽'}
+          {isDragActive ? '松开即可' : '点击或拖拽上传图片'}
         </p>
         <p className="text-xs tracking-[0.2em]" style={{ color: 'var(--ink-mid)' }}>
           PNG · JPG · WebP

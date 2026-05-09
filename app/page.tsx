@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { UploadZone } from '@/components/UploadZone';
 import { LoadingPoetic } from '@/components/LoadingPoetic';
 import { ImmersiveView } from '@/components/ImmersiveView';
@@ -9,6 +9,43 @@ import type { MatchResult } from '@/lib/types';
 
 type Phase = 'upload' | 'loading' | 'result';
 
+function InkBackground() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none"
+      style={{ background: 'var(--ink-deep)' }}
+    >
+      {/* Slow-moving gradient orbs */}
+      <div
+        className="absolute w-[800px] h-[800px] rounded-full opacity-[0.03]"
+        style={{
+          background: 'radial-gradient(circle, rgba(201,169,97,1) 0%, transparent 70%)',
+          top: '-10%',
+          left: '-10%',
+          animation: 'float 20s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute w-[600px] h-[600px] rounded-full opacity-[0.02]"
+        style={{
+          background: 'radial-gradient(circle, rgba(184,60,47,1) 0%, transparent 70%)',
+          bottom: '-5%',
+          right: '-5%',
+          animation: 'float 25s ease-in-out infinite reverse',
+        }}
+      />
+      <div
+        className="absolute w-[400px] h-[400px] rounded-full opacity-[0.02]"
+        style={{
+          background: 'radial-gradient(circle, rgba(168,160,140,1) 0%, transparent 70%)',
+          top: '40%',
+          left: '60%',
+          animation: 'float 18s ease-in-out infinite 2s',
+        }}
+      />
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [phase, setPhase] = useState<Phase>('upload');
   const [image, setImage] = useState('');
@@ -16,8 +53,22 @@ export default function HomePage() {
   const [error, setError] = useState('');
   const resultRef = useRef<HTMLDivElement>(null);
 
-  const handleImageSelect = async (img: string) => {
-    setImage(img);
+  // Inject float animation
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.05); }
+        66% { transform: translate(-20px, 20px) scale(0.95); }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, []);
+
+  const handleImageSelect = async (original: string, forApi: string) => {
+    setImage(original);
     setPhase('loading');
     setError('');
 
@@ -25,7 +76,7 @@ export default function HomePage() {
       const res = await fetch('/api/match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: img }),
+        body: JSON.stringify({ image: forApi }),
       });
 
       if (!res.ok) {
@@ -51,59 +102,80 @@ export default function HomePage() {
   };
 
   return (
-    <main className="w-full h-screen relative" style={{ backgroundColor: 'var(--ink-deep)' }}>
+    <main className="relative w-full h-screen overflow-hidden"
+      style={{ backgroundColor: 'var(--ink-deep)' }}
+    >
+      {/* Background */}
+      {phase === 'upload' && <InkBackground />}
+
+      {/* Rice paper noise overlay */}
+      <div className="fixed inset-0 pointer-events-none z-[9999]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E")`,
+        }}
+      />
+
       {phase === 'upload' && (
-        <div className="flex flex-col items-center justify-center h-full px-4">
-          {/* Brand seal */}
-          <div className="text-center mb-12">
-            <h1
-              className="text-6xl font-serif tracking-[0.25em] mb-4"
+        <div className="relative z-10 flex flex-col items-center justify-center h-full px-6">
+          {/* Brand */}
+          <div className="text-center mb-16"
+            style={{
+              opacity: 0,
+              animation: 'ink-bloom 1s ease-out 0.2s forwards',
+            }}
+          >
+            <h1 className="text-7xl md:text-8xl lg:text-9xl font-serif tracking-[0.2em] mb-6"
               style={{ color: 'var(--paper)' }}
             >
               诗入画
             </h1>
-            <div
-              className="w-12 h-px mx-auto mb-4"
-              style={{ backgroundColor: 'var(--gold)', opacity: 0.4 }}
+            <div className="w-16 h-px mx-auto mb-6"
+              style={{ backgroundColor: 'var(--gold)', opacity: 0.3 }}
             />
-            <p
-              className="text-sm tracking-[0.3em] font-serif"
+            <p className="text-base md:text-lg tracking-[0.3em] font-serif"
               style={{ color: 'var(--paper-dim)' }}
             >
               上传图片，匹配唐诗名句
             </p>
           </div>
 
-          <UploadZone onImageSelect={handleImageSelect} />
+          {/* Upload */}
+          <div
+            style={{
+              opacity: 0,
+              animation: 'ink-bloom 1s ease-out 0.6s forwards',
+            }}
+          >
+            <UploadZone onImageSelect={handleImageSelect} />
+          </div>
 
           {error && (
-            <p className="mt-8 text-sm tracking-wide" style={{ color: 'var(--cinnabar)' }}>
+            <p className="mt-10 text-sm tracking-wide"
+              style={{ color: 'var(--cinnabar)', opacity: 0.8 }}
+            >
               {error}
             </p>
           )}
 
-          <p
-            className="mt-12 text-xs tracking-[0.2em]"
+          {/* Footer credit */}
+          <p className="absolute bottom-8 text-xs tracking-[0.2em]"
             style={{ color: 'var(--ink-mid)' }}
           >
-            powered by Kimi K2.6
+            powered by Gemini 2.5 Flash
           </p>
         </div>
       )}
 
       {phase === 'loading' && (
-        <div className="h-full">
+        <div className="relative z-10 h-full">
           <LoadingPoetic />
         </div>
       )}
 
       {phase === 'result' && result && (
         <div className="relative h-full">
-          <div ref={resultRef} className="h-full">
-            <ImmersiveView image={image} result={result} />
-          </div>
+          <ImmersiveView image={image} result={result} captureRef={resultRef} />
 
-          {/* Controls */}
           <div className="absolute top-5 right-5 flex gap-3 z-10">
             <SaveButton
               targetRef={resultRef}
