@@ -62,13 +62,13 @@ function computeFontSize(
   else hSpaceRatio = 0.85;               // top/bottom 留 6% 边距
 
   if (isVertical) {
-    // 竖排：限制因素是可用高度（文字纵向排列）
-    const maxByHeight = (ch * vSpaceRatio) / charsPerLine;
+    // 竖排：限制因素是可用高度（文字纵向排列，需计入 letter-spacing）
+    const maxByHeight = (ch * vSpaceRatio) / (charsPerLine * charWidth);
     // 宽度限制：竖排总宽度
     const maxByWidth = coupletLineCount > 1
       ? (cw * hSpaceRatio * 0.45) / coupletLineCount
       : cw * hSpaceRatio * 0.22;
-    return Math.max(16, Math.min(80, maxByHeight, maxByWidth));
+    return Math.max(16, Math.min(72, maxByHeight, maxByWidth));
   }
 
   if (isCouplet && coupletLineCount === 1) {
@@ -128,9 +128,11 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
     return () => { ro.disconnect(); window.removeEventListener('resize', update); };
   }, [naturalSize]);
 
-  const config = PLACEMENT_STYLES[result.text_placement];
-  const isBottom = result.text_placement.startsWith('bottom');
-  const isTop = result.text_placement.startsWith('top');
+  // Defensive: never place poem text at the exact center to avoid clipping and overlap
+  const textPlacement = result.text_placement === 'center' ? 'bottom' : result.text_placement;
+  const config = PLACEMENT_STYLES[textPlacement];
+  const isBottom = textPlacement.startsWith('bottom');
+  const isTop = textPlacement.startsWith('top');
 
   // 容器尺寸：跟随图片比例，无黑边
   let containerW = '100%';
@@ -159,7 +161,7 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
   const fontSize = computeFontSize(
     containerSize.w,
     containerSize.h,
-    result.text_placement,
+    textPlacement,
     isVertical,
     charsPerLine,
     isCouplet,
@@ -174,7 +176,7 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
     'left': 'right', 'center': 'bottom-right', 'right': 'left',
     'bottom-left': 'top-right', 'bottom': 'top', 'bottom-right': 'top-left',
   };
-  const sealPos = PLACEMENT_STYLES[sealPlacement[result.text_placement]];
+  const sealPos = PLACEMENT_STYLES[sealPlacement[textPlacement]];
 
   return (
     <div className="flex items-center justify-center w-full h-full bg-neutral-950">
@@ -185,7 +187,7 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
           else if (captureRef) (captureRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
         }}
         className="relative"
-        style={{ width: containerW, height: containerH }}
+        style={{ width: containerW, height: containerH, overflow: 'visible' }}
       >
         <img
           src={image}
@@ -196,7 +198,7 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
         />
 
         {/* Gradients */}
-        {(isBottom || result.text_placement === 'center') && (
+        {isBottom && (
           <div className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
             style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.35) 40%, transparent 100%)' }} />
         )}
@@ -204,11 +206,11 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
           <div className="absolute top-0 left-0 right-0 h-1/3 pointer-events-none"
             style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)' }} />
         )}
-        {result.text_placement === 'left' && (
+        {textPlacement === 'left' && (
           <div className="absolute top-0 bottom-0 left-0 w-1/3 pointer-events-none"
             style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.5) 0%, transparent 100%)' }} />
         )}
-        {result.text_placement === 'right' && (
+        {textPlacement === 'right' && (
           <div className="absolute top-0 bottom-0 right-0 w-1/3 pointer-events-none"
             style={{ background: 'linear-gradient(to left, rgba(0,0,0,0.5) 0%, transparent 100%)' }} />
         )}
@@ -216,7 +218,7 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
         {/* Poem text */}
         <div
           className={`absolute ${config.alignClass}`}
-          style={{ ...config.style, writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb' }}
+          style={{ ...config.style, writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb', zIndex: 10 }}
         >
           {isCouplet && charsPerLine >= 7 ? (
             <div>
@@ -262,7 +264,7 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
         {/* Seal */}
         {style.signature && style.sealText && (
           <div className="absolute pointer-events-none"
-            style={{ ...sealPos.style, opacity: visible ? 0.75 : 0, transition: 'opacity 0.8s ease-out 0.5s' }}>
+            style={{ ...sealPos.style, opacity: visible ? 0.75 : 0, transition: 'opacity 0.8s ease-out 0.5s', zIndex: 5 }}>
             <div className="flex items-center justify-center"
               style={{
                 width: isVertical ? 36 : 44, height: isVertical ? 44 : 36,

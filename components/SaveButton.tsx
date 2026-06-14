@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { toPng } from 'html-to-image';
 
 interface SaveButtonProps {
-  targetRef: React.RefObject<HTMLElement | null>;
+  targetRef: React.RefObject<HTMLDivElement | null>;
   filename: string;
 }
 
@@ -18,7 +18,7 @@ export function SaveButton({ targetRef, filename }: SaveButtonProps) {
     setSaving(true);
     try {
       await document.fonts.ready;
-      const dataUrl = await toPng(el, { pixelRatio: 3, cacheBust: true, quality: 1 });
+      const dataUrl = await toPng(el, { pixelRatio: 2, cacheBust: true, quality: 1 });
       const link = document.createElement('a');
       link.download = filename;
       link.href = dataUrl;

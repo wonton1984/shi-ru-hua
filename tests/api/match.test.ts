@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-vi.mock('@/lib/kimi', () => ({
+vi.mock('@/lib/gemini', () => ({
   extractTags: vi.fn().mockResolvedValue({
     tags: { subjects: ['月'], moods: ['思乡'], seasons: ['秋'], scenes: ['夜'], palette: ['清冷'] },
     subject_region: 'center',

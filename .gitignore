@@ -3,7 +3,8 @@
 /out
 .env.local
 *.log
-/scripts
+tsconfig.tsbuildinfo
+.DS_Store
 
 # Local Netlify folder
 .netlify

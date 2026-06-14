@@ -248,6 +248,8 @@ const MOOD_STYLES: Record<string, Partial<PoemStyle>> = {
 };
 
 export function computePoemStyle(moods: string[]): PoemStyle {
+  // Use the first mood with a defined style. In the future, multiple matched
+  // moods could be blended; for now the first match drives the whole style.
   for (const mood of moods) {
     if (MOOD_STYLES[mood]) {
       return { ...DEFAULT_STYLE, ...MOOD_STYLES[mood] };

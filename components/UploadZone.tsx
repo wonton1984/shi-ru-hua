@@ -14,8 +14,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
       const file = acceptedFiles[0];
       if (!file) return;
 
-      // iOS HEIC 检查
-      const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|heic)$/i.test(file.name);
+      const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp)$/i.test(file.name);
       if (!isImage) {
         alert('不支持的图片格式，请选择 JPG / PNG / WebP 格式的照片');
         return;
@@ -37,7 +36,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
-    maxSize: 50 * 1024 * 1024,
+    maxSize: 10 * 1024 * 1024,
     multiple: false,
     useFsAccessApi: false,
   });
@@ -118,7 +117,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
           {isDragActive ? '松开即可' : '点击或拖拽上传图片'}
         </p>
         <p className="text-xs tracking-[0.2em]" style={{ color: 'var(--ink-mid)' }}>
-          PNG · JPG · WebP
+          JPG · PNG · WebP
         </p>
         {rejectionMsg && (
           <p className="mt-3 text-xs" style={{ color: 'var(--cinnabar)', opacity: 0.8 }}>

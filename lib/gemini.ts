@@ -2,7 +2,12 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { vocabulary } from './vocab';
 import type { ImageAnalysis, GridPosition, PoemTags } from './types';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) {
+  throw new Error('Missing GEMINI_API_KEY environment variable');
+}
+
+const genAI = new GoogleGenerativeAI(apiKey);
 
 const TAG_MODEL = genAI.getGenerativeModel({
   model: 'gemini-2.5-flash',

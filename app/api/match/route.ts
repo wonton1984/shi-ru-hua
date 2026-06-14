@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createHash } from 'crypto';
-import { extractTags, selectBestMatch } from '@/lib/kimi';
+import { extractTags, selectBestMatch } from '@/lib/gemini';
 import { scorePoem } from '@/lib/score';
 import { getCached, setCached } from '@/lib/cache';
 import { computePoemStyle } from '@/lib/style';
 import poems from '@/data/poems.json';
-import type { Poem, MatchResult } from '@/lib/types';
+import type { ImageAnalysis, Poem, MatchResult } from '@/lib/types';
 
 const SAFE_POEMS = (poems as Poem[]).slice(0, 5);
+const MAX_BODY_SIZE = 6 * 1024 * 1024; // 6 MB, align with Netlify limit
 
 function computeHash(base64Image: string): string {
   return createHash('sha256').update(base64Image).digest('hex').slice(0, 16);
@@ -30,7 +31,19 @@ function extractCouplet(line: string, fullPoem: string): string[] {
 
 export async function POST(request: Request) {
   try {
-    const { image } = (await request.json()) as { image: string };
+    const bodyText = await request.text();
+    if (bodyText.length > MAX_BODY_SIZE) {
+      return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+    }
+
+    let body: { image?: unknown };
+    try {
+      body = JSON.parse(bodyText);
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
+
+    const { image } = body;
     if (!image || typeof image !== 'string') {
       return NextResponse.json({ error: 'Missing image' }, { status: 400 });
     }
@@ -43,7 +56,7 @@ export async function POST(request: Request) {
       return NextResponse.json(cached);
     }
 
-    let analysis: import('@/lib/types').ImageAnalysis;
+    let analysis: ImageAnalysis;
     try {
       analysis = await extractTags(base64Data);
     } catch (err) {
@@ -52,7 +65,7 @@ export async function POST(request: Request) {
         tags: { subjects: ['山'], moods: ['闲适'], seasons: [], scenes: ['山水'], palette: ['素淡'] },
         subject_region: 'center',
         text_placement: 'bottom-right',
-      } as import('@/lib/types').ImageAnalysis;
+      };
     }
 
     const scored = (poems as Poem[]).map((poem) => ({

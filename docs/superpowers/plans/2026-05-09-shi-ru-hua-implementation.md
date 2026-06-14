@@ -710,7 +710,7 @@ git commit -m "feat: add Kimi K2.6 API client with tag extraction and selection"
 ```ts
 import { NextResponse } from 'next/server';
 import { createHash } from 'crypto';
-import { extractTags, selectBestMatch } from '@/lib/kimi';
+import { extractTags, selectBestMatch } from '@/lib/gemini';
 import { scorePoem } from '@/lib/score';
 import { getCached, setCached } from '@/lib/cache';
 import poems from '@/data/poems.json';
@@ -1334,7 +1334,7 @@ git commit -m "feat: wire all components into main page state machine"
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock the modules before importing the route
-vi.mock('@/lib/kimi', () => ({
+vi.mock('@/lib/gemini', () => ({
   extractTags: vi.fn().mockResolvedValue({
     tags: { subjects: ['月'], moods: ['思乡'], seasons: ['秋'], scenes: ['夜'], palette: ['清冷'] },
     subject_region: 'center',
