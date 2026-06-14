@@ -137,8 +137,8 @@ export default function HomePage() {
               animation: 'ink-bloom 1s ease-out 0.2s forwards',
             }}
           >
-            <h1 className="text-7xl md:text-8xl lg:text-9xl font-serif tracking-[0.2em] mb-6 leading-[1.15] pt-2"
-              style={{ color: 'var(--paper)' }}
+            <h1 className="text-7xl md:text-8xl lg:text-9xl font-serif tracking-[0.2em] mb-6 pt-2"
+              style={{ color: 'var(--paper)', lineHeight: 1.15 }}
             >
               诗入画
             </h1>
