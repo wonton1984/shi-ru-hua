@@ -129,16 +129,16 @@ export default function HomePage() {
       />
 
       {phase === 'upload' && (
-        <div className="relative z-10 flex flex-col items-center justify-center h-full px-6">
+        <div className="relative z-10 flex flex-col items-center h-full px-6 pt-20 md:pt-24 lg:pt-28">
           {/* Brand */}
-          <div className="text-center mb-16"
+          <div className="text-center mb-12 overflow-visible"
             style={{
               opacity: 0,
               animation: 'ink-bloom 1s ease-out 0.2s forwards',
             }}
           >
-            <h1 className="text-7xl md:text-8xl lg:text-9xl font-serif tracking-[0.2em] mb-6 pt-2"
-              style={{ color: 'var(--paper)', lineHeight: 1.15 }}
+            <h1 className="text-7xl md:text-8xl lg:text-9xl font-serif tracking-[0.2em] mb-6"
+              style={{ color: 'var(--paper)', lineHeight: 1.3 }}
             >
               诗入画
             </h1>
