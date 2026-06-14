@@ -36,7 +36,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 30 * 1024 * 1024,
     multiple: false,
     useFsAccessApi: false,
   });
@@ -117,11 +117,11 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
           {isDragActive ? '松开即可' : '点击或拖拽上传图片'}
         </p>
         <p className="text-xs tracking-[0.2em]" style={{ color: 'var(--ink-mid)' }}>
-          JPG · PNG · WebP
+          JPG · PNG · WebP · 最大 30MB
         </p>
         {rejectionMsg && (
           <p className="mt-3 text-xs" style={{ color: 'var(--cinnabar)', opacity: 0.8 }}>
-            图片超过10MB限制
+            图片超过30MB限制
           </p>
         )}
       </div>
