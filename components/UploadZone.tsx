@@ -48,7 +48,7 @@ export function UploadZone({ onImageSelect }: UploadZoneProps) {
       {...getRootProps()}
       className={`
         group relative flex flex-col items-center justify-center
-        w-80 md:w-96 lg:w-[28rem] aspect-[3/4]
+        w-72 sm:w-80 md:w-96 lg:w-[28rem] aspect-[3/4]
         cursor-pointer
         transition-all duration-700 ease-out
         ${isDragActive ? 'scale-[1.03]' : 'hover:scale-[1.01]'}

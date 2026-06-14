@@ -160,7 +160,7 @@ export default function HomePage() {
         <div className="relative z-10 flex flex-col md:flex-row w-full h-full">
           {/* Left: Title & intro */}
           <div
-            className="flex flex-col justify-center items-center md:items-start px-8 md:px-16 lg:px-24 py-12 md:py-0 md:w-[45%] lg:w-[42%]"
+            className="flex flex-col justify-end md:justify-center items-center md:items-start px-6 sm:px-8 md:px-16 lg:px-24 pt-16 sm:pt-20 md:pt-0 pb-6 md:pb-0 md:w-[45%] lg:w-[42%]"
             style={{
               opacity: 0,
               animation: 'ink-bloom 1s ease-out 0.2s forwards',
@@ -168,7 +168,7 @@ export default function HomePage() {
           >
             {/* Mobile horizontal title */}
             <h1
-              className="md:hidden text-6xl font-serif tracking-[0.2em] mb-6"
+              className="md:hidden text-5xl sm:text-6xl font-serif tracking-[0.2em] mb-4 sm:mb-6"
               style={{ color: 'var(--paper)', lineHeight: 1.25 }}
             >
               诗入画
@@ -192,20 +192,20 @@ export default function HomePage() {
             </div>
 
             <div
-              className="mt-8 md:mt-12 text-center md:text-left max-w-sm"
+              className="mt-4 sm:mt-6 md:mt-12 text-center md:text-left max-w-sm"
               style={{
                 opacity: 0,
                 animation: 'ink-bloom 1s ease-out 0.6s forwards',
               }}
             >
               <p
-                className="text-base md:text-lg tracking-[0.25em] font-serif mb-4"
+                className="text-sm sm:text-base md:text-lg tracking-[0.25em] font-serif mb-3 sm:mb-4"
                 style={{ color: 'var(--paper-dim)' }}
               >
                 上传图片，匹配唐诗名句
               </p>
               <p
-                className="text-xs md:text-sm leading-relaxed"
+                className="text-xs sm:text-sm leading-relaxed hidden sm:block"
                 style={{ color: 'var(--ink-light)' }}
               >
                 取一帧光影，寻一句古诗。
@@ -217,7 +217,7 @@ export default function HomePage() {
 
           {/* Right: Upload zone */}
           <div
-            className="flex-1 flex items-center justify-center px-6 pb-12 md:pb-0 md:pr-12 lg:pr-24"
+            className="flex-1 flex items-start md:items-center justify-center px-4 sm:px-6 pb-20 md:pb-0 md:pr-12 lg:pr-24"
             style={{
               opacity: 0,
               animation: 'ink-bloom 1s ease-out 0.8s forwards',
