@@ -11,37 +11,63 @@ type Phase = 'upload' | 'loading' | 'result';
 
 function InkBackground() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none"
+    <div
+      className="absolute inset-0 overflow-hidden pointer-events-none"
       style={{ background: 'var(--ink-deep)' }}
     >
-      {/* Slow-moving gradient orbs */}
+      {/* Soft warm orb */}
       <div
-        className="absolute w-[800px] h-[800px] rounded-full opacity-[0.03]"
+        className="absolute w-[900px] h-[900px] rounded-full opacity-[0.04]"
         style={{
           background: 'radial-gradient(circle, rgba(201,169,97,1) 0%, transparent 70%)',
-          top: '-10%',
-          left: '-10%',
-          animation: 'float 20s ease-in-out infinite',
+          top: '-20%',
+          right: '-10%',
+          animation: 'float 24s ease-in-out infinite',
         }}
       />
+      {/* Cool ink orb */}
       <div
-        className="absolute w-[600px] h-[600px] rounded-full opacity-[0.02]"
-        style={{
-          background: 'radial-gradient(circle, rgba(184,60,47,1) 0%, transparent 70%)',
-          bottom: '-5%',
-          right: '-5%',
-          animation: 'float 25s ease-in-out infinite reverse',
-        }}
-      />
-      <div
-        className="absolute w-[400px] h-[400px] rounded-full opacity-[0.02]"
+        className="absolute w-[700px] h-[700px] rounded-full opacity-[0.03]"
         style={{
           background: 'radial-gradient(circle, rgba(168,160,140,1) 0%, transparent 70%)',
-          top: '40%',
-          left: '60%',
-          animation: 'float 18s ease-in-out infinite 2s',
+          bottom: '-15%',
+          left: '-5%',
+          animation: 'float 28s ease-in-out infinite reverse',
         }}
       />
+      {/* Cinnabar accent */}
+      <div
+        className="absolute w-[300px] h-[300px] rounded-full opacity-[0.025]"
+        style={{
+          background: 'radial-gradient(circle, rgba(184,60,47,1) 0%, transparent 70%)',
+          top: '40%',
+          left: '35%',
+          animation: 'float 20s ease-in-out infinite 2s',
+        }}
+      />
+    </div>
+  );
+}
+
+function Seal({ text }: { text: string }) {
+  return (
+    <div
+      className="flex items-center justify-center border-2"
+      style={{
+        width: 44,
+        height: 44,
+        borderColor: 'rgba(180, 60, 47, 0.55)',
+        color: 'rgba(180, 60, 47, 0.75)',
+        fontSize: 14,
+        fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
+        letterSpacing: 1,
+        writingMode: 'vertical-rl',
+        textOrientation: 'upright',
+        lineHeight: 1,
+        padding: 2,
+      }}
+    >
+      {text}
     </div>
   );
 }
@@ -115,55 +141,94 @@ export default function HomePage() {
   };
 
   return (
-    <main className="relative w-full h-screen overflow-hidden"
+    <main
+      className="relative w-full h-screen overflow-hidden"
       style={{ backgroundColor: 'var(--ink-deep)' }}
     >
       {/* Background */}
       {phase === 'upload' && <InkBackground />}
 
       {/* Rice paper noise overlay */}
-      <div className="fixed inset-0 pointer-events-none z-[9999]"
+      <div
+        className="fixed inset-0 pointer-events-none z-[9999]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E")`,
         }}
       />
 
       {phase === 'upload' && (
-        <div className="relative z-10 flex flex-col items-center h-full px-6 pt-20 md:pt-24 lg:pt-28">
-          {/* Brand */}
-          <div className="text-center mb-12 overflow-visible"
+        <div className="relative z-10 flex flex-col md:flex-row w-full h-full">
+          {/* Left: Title & intro */}
+          <div
+            className="flex flex-col justify-center items-center md:items-start px-8 md:px-16 lg:px-24 py-12 md:py-0 md:w-[45%] lg:w-[42%]"
             style={{
               opacity: 0,
               animation: 'ink-bloom 1s ease-out 0.2s forwards',
             }}
           >
-            <h1 className="text-7xl md:text-8xl lg:text-9xl font-serif tracking-[0.2em] mb-6"
-              style={{ color: 'var(--paper)', lineHeight: 1.3 }}
+            {/* Mobile horizontal title */}
+            <h1
+              className="md:hidden text-6xl font-serif tracking-[0.2em] mb-6"
+              style={{ color: 'var(--paper)', lineHeight: 1.25 }}
             >
               诗入画
             </h1>
-            <div className="w-16 h-px mx-auto mb-6"
-              style={{ backgroundColor: 'var(--gold)', opacity: 0.3 }}
-            />
-            <p className="text-base md:text-lg tracking-[0.3em] font-serif"
-              style={{ color: 'var(--paper-dim)' }}
+
+            {/* Desktop vertical title */}
+            <div className="hidden md:flex items-start gap-6">
+              <h1
+                className="text-7xl lg:text-8xl xl:text-9xl font-serif tracking-[0.15em] writing-vertical"
+                style={{ color: 'var(--paper)', lineHeight: 1.25 }}
+              >
+                诗入画
+              </h1>
+              <div className="flex flex-col items-center gap-5 pt-4">
+                <div
+                  className="w-px h-20"
+                  style={{ backgroundColor: 'var(--gold)', opacity: 0.3 }}
+                />
+                <Seal text="诗意" />
+              </div>
+            </div>
+
+            <div
+              className="mt-8 md:mt-12 text-center md:text-left max-w-sm"
+              style={{
+                opacity: 0,
+                animation: 'ink-bloom 1s ease-out 0.6s forwards',
+              }}
             >
-              上传图片，匹配唐诗名句
-            </p>
+              <p
+                className="text-base md:text-lg tracking-[0.25em] font-serif mb-4"
+                style={{ color: 'var(--paper-dim)' }}
+              >
+                上传图片，匹配唐诗名句
+              </p>
+              <p
+                className="text-xs md:text-sm leading-relaxed"
+                style={{ color: 'var(--ink-light)' }}
+              >
+                取一帧光影，寻一句古诗。
+                <br />
+                让 AI 为画面写一首唐人绝句。
+              </p>
+            </div>
           </div>
 
-          {/* Upload */}
+          {/* Right: Upload zone */}
           <div
+            className="flex-1 flex items-center justify-center px-6 pb-12 md:pb-0 md:pr-12 lg:pr-24"
             style={{
               opacity: 0,
-              animation: 'ink-bloom 1s ease-out 0.6s forwards',
+              animation: 'ink-bloom 1s ease-out 0.8s forwards',
             }}
           >
             <UploadZone onImageSelect={handleImageSelect} />
           </div>
 
           {error && (
-            <p className="mt-10 text-sm tracking-wide"
+            <p
+              className="absolute bottom-24 md:bottom-8 left-0 right-0 text-center text-sm tracking-wide px-6"
               style={{ color: 'var(--cinnabar)', opacity: 0.8 }}
             >
               {error}
@@ -171,7 +236,8 @@ export default function HomePage() {
           )}
 
           {/* Footer credit */}
-          <p className="absolute bottom-8 text-xs tracking-[0.2em]"
+          <p
+            className="absolute bottom-6 left-0 right-0 text-center text-xs tracking-[0.2em]"
             style={{ color: 'var(--ink-mid)' }}
           >
             powered by Gemini 2.5 Flash
