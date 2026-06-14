@@ -170,13 +170,8 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
 
   const tracking = fontSize > 60 ? '0.05em' : fontSize > 40 ? '0.08em' : '0.12em';
 
-  // 印章位置
-  const sealPlacement: Record<GridPosition, GridPosition> = {
-    'top-left': 'bottom-right', 'top': 'bottom', 'top-right': 'bottom-left',
-    'left': 'right', 'center': 'bottom-right', 'right': 'left',
-    'bottom-left': 'top-right', 'bottom': 'top', 'bottom-right': 'top-left',
-  };
-  const sealPos = PLACEMENT_STYLES[sealPlacement[textPlacement]];
+  // Seal: fixed to bottom-right corner with consistent offset
+  const sealSize = 56;
 
   return (
     <div className="flex items-center justify-center w-full h-full bg-neutral-950">
@@ -263,16 +258,37 @@ export function ImmersiveView({ image, result, captureRef }: ImmersiveViewProps)
 
         {/* Seal */}
         {style.signature && style.sealText && (
-          <div className="absolute pointer-events-none"
-            style={{ ...sealPos.style, opacity: visible ? 0.75 : 0, transition: 'opacity 0.8s ease-out 0.5s', zIndex: 5 }}>
-            <div className="flex items-center justify-center"
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              bottom: '6%',
+              right: '5%',
+              opacity: visible ? 0.85 : 0,
+              transition: 'opacity 0.8s ease-out 0.5s',
+              zIndex: 5,
+            }}
+          >
+            <div
+              className="flex items-center justify-center"
               style={{
-                width: isVertical ? 36 : 44, height: isVertical ? 44 : 36,
-                border: '2px solid rgba(180, 60, 47, 0.7)', color: 'rgba(180, 60, 47, 0.85)',
-                fontSize: isVertical ? 13 : 15, fontFamily: style.fontFamily,
-                letterSpacing: 2, writingMode: isVertical ? 'vertical-rl' : 'horizontal-tb',
-                textAlign: 'center', lineHeight: 1, padding: 2,
-              }}>
+                width: sealSize,
+                height: sealSize,
+                border: '3px solid rgba(180, 60, 47, 0.85)',
+                borderRadius: 4,
+                color: 'rgba(180, 60, 47, 0.9)',
+                fontSize: 18,
+                fontFamily: "'Ma Shan Zheng', 'Noto Serif SC', serif",
+                fontWeight: 700,
+                letterSpacing: 1,
+                writingMode: 'vertical-rl',
+                textOrientation: 'upright',
+                textAlign: 'center',
+                lineHeight: 1,
+                padding: 4,
+                boxShadow: '0 2px 12px rgba(0,0,0,0.4), inset 0 0 8px rgba(180,60,47,0.1)',
+                transform: 'rotate(-3deg)',
+              }}
+            >
               {style.sealText}
             </div>
           </div>
